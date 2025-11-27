@@ -1,11 +1,16 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:wheel_picker/wheel_picker.dart';
 import 'package:wrdice/wrdice.dart' as wrdice;
+import 'package:wrdice/wrdice_bindings_generated.dart';
+
+enum pieKey { Blue, Red, Draw, MutualDestruction }
 
 class Stats {
-  final Map<String, double> pieData;
-  final List<double> barData;
+  final Map<pieKey, (String, double)> pieData;
+  final Map<pieKey, wrdice.DartStats> barData;
   Stats(this.pieData, this.barData);
 }
 
@@ -16,129 +21,124 @@ class LandSeaStatsApp extends StatefulWidget {
   State<LandSeaStatsApp> createState() => _LandSeaStatsAppState();
 }
 
+const Color _blue = Color.fromARGB(255, 165, 223, 250);
+const Color _red = Color.fromARGB(255, 254, 146, 146);
+const List<Color> unitColors = [
+  Colors.yellow,
+  Colors.blue,
+  Colors.green,
+  Colors.red,
+];
+
 class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
   int _selectedNavIndex = 0; // 0 = Units, 1 = Pie, 2 = Bar
   bool _isLand = true;
-  late Future<wrdice.DartSimStats> asyncResult;
-  asyncResult.then((value) => updatePlots(value));
+  late Completer<wrdice.DartSimStats> asyncResult;
 
-  void convertAndCalcBattle(List<List<int>> units, bool is_lnd) {
-    List<int> lnd_a = List<int>.filled(5, 0);
-    List<int> air_a = List<int>.filled(5, 0);
-    List<int> sea_a = List<int>.filled(5, 0);
-    List<int> lnd_b = List<int>.filled(5, 0);
-    List<int> air_b = List<int>.filled(5, 0);
-    List<int> sea_b = List<int>.filled(5, 0);
-    for (int i = 0; i < 5; i++) {
-      if (is_lnd) {
-        lnd_a[i] = units[0][i];
-        lnd_b[i] = units[1][i];
-      } else {
-        sea_a[i] = units[0][i];
-        sea_b[i] = units[1][i];
-      }
-      air_a[i] = units[0][i];
-      air_b[i] = units[1][i];
-    }
-    calcBattle(lnd_a, air_a, sea_a, lnd_b, air_b, sea_b);
+  Completer<wrdice.DartSimStats> addPlotsToResult(
+    Future<wrdice.DartSimStats> future,
+  ) {
+    final completer = Completer<wrdice.DartSimStats>();
+    future
+        .then((value) {
+          _plot(value);
+          completer.complete(future);
+        })
+        .catchError(completer.completeError);
+    return completer;
   }
 
-  void updateDice(int columnIndex){
+  void _plot(wrdice.DartSimStats value) {
+    setState(() {
+      statistics = Stats(
+        {
+          pieKey.Blue: ('Blue', value.br.winA * 100),
+          pieKey.Red: ('Red', value.br.winB * 100),
+          pieKey.Draw: ('Draw', value.br.draw * 100),
+          pieKey.MutualDestruction: (
+            'Mutual Destruction',
+            value.br.death * 100,
+          ),
+        },
+        {pieKey.Blue: value.armyA, pieKey.Red: value.armyB},
+      );
+    });
+  }
+
+  void updateDice(int columnIndex) {
     wrdice.DartArmy army = getArmy(columnIndex);
     wrdice.DartDice dice = wrdice.updateDice(army);
-    
-    setState((){airDiceVsAir[columnIndex] = dice.air.vs_air.toList();});
-    setState((){airDiceVsGround[columnIndex] = dice.air.vs_gnd.toList();});
-    setState((){landDiceVsAir[columnIndex] = dice.lnd.vs_air.toList();});
-    setState((){landDiceVsGround[columnIndex] = dice.lnd.vs_gnd.toList();});
-    setState((){seaDiceVsAir[columnIndex] = dice.sea.vs_air.toList();});
-    setState((){seaDiceVsGround[columnIndex] = dice.sea.vs_gnd.toList();});
+
+    setState(() {
+      airDiceVsAir[columnIndex] = dice.air.vs_air.toList();
+    });
+    setState(() {
+      airDiceVsGround[columnIndex] = dice.air.vs_gnd.toList();
+    });
+    setState(() {
+      landDiceVsAir[columnIndex] = dice.lnd.vs_air.toList();
+    });
+    setState(() {
+      landDiceVsGround[columnIndex] = dice.lnd.vs_gnd.toList();
+    });
+    setState(() {
+      seaDiceVsAir[columnIndex] = dice.sea.vs_air.toList();
+    });
+    setState(() {
+      seaDiceVsGround[columnIndex] = dice.sea.vs_gnd.toList();
+    });
   }
 
-  wrdice.DartArmy getArmy(int columnIndex){
-    return wrdice.DartArmy(landIconValues[columnIndex], 
-                    airIconValues[columnIndex],
-                    seaIconValues[columnIndex],
-                    landIconStanceOff[columnIndex],
-                    landIconStanceDef[columnIndex],
-                    airIconStanceOff[columnIndex],
-                    airIconStanceDef[columnIndex],
-                    seaIconStanceOff[columnIndex],
-                    seaIconStanceDef[columnIndex]);
+  wrdice.DartArmy getArmy(int columnIndex) {
+    return wrdice.DartArmy(
+      landIconValues[columnIndex],
+      airIconValues[columnIndex],
+      seaIconValues[columnIndex],
+      landIconStanceOff[columnIndex],
+      landIconStanceDef[columnIndex],
+      airIconStanceOff[columnIndex],
+      airIconStanceDef[columnIndex],
+      seaIconStanceOff[columnIndex],
+      seaIconStanceDef[columnIndex],
+    );
   }
 
-  wrdice.DartArmy getArmyWithGroundSelection(int columnIndex, bool isLand){
-    if (isLand){
+  wrdice.DartArmy getArmyWithGroundSelection(int columnIndex, bool isLand) {
+    if (isLand) {
       return wrdice.DartArmy(
-                    landIconValues[columnIndex], 
-                    airIconValues[columnIndex],
-                    List<int>.filled(5,0),
-                    landIconStanceOff[columnIndex],
-                    landIconStanceDef[columnIndex],
-                    airIconStanceOff[columnIndex],
-                    airIconStanceDef[columnIndex],
-                    List<int>.filled(5,0),
-                    List<int>.filled(5,0));
+        landIconValues[columnIndex],
+        airIconValues[columnIndex],
+        List<int>.filled(5, 0),
+        landIconStanceOff[columnIndex],
+        landIconStanceDef[columnIndex],
+        airIconStanceOff[columnIndex],
+        airIconStanceDef[columnIndex],
+        List<int>.filled(5, 0),
+        List<int>.filled(5, 0),
+      );
     } else {
-       return wrdice.DartArmy(
-                    List<int>.filled(5,0),
-                    airIconValues[columnIndex],
-                    seaIconValues[columnIndex],
-                    List<int>.filled(5,0),
-                    List<int>.filled(5,0),
-                    airIconStanceOff[columnIndex],
-                    airIconStanceDef[columnIndex],
-                    seaIconStanceOff[columnIndex],
-                    seaIconStanceDef[columnIndex]);
+      return wrdice.DartArmy(
+        List<int>.filled(5, 0),
+        airIconValues[columnIndex],
+        seaIconValues[columnIndex],
+        List<int>.filled(5, 0),
+        List<int>.filled(5, 0),
+        airIconStanceOff[columnIndex],
+        airIconStanceDef[columnIndex],
+        seaIconStanceOff[columnIndex],
+        seaIconStanceDef[columnIndex],
+      );
     }
   }
 
-
-  void _calcBattle(
-    bool isLand
-  ) {
+  void _calcBattle(bool isLand) {
     wrdice.DartArmy army_a = getArmyWithGroundSelection(0, isLand);
     wrdice.DartArmy army_b = getArmyWithGroundSelection(1, isLand);
     final bool fa = true;
     final bool bc = true;
-    asyncResult = wrdice.runBattleAsync(army_a, army_b, fa, bc);
-  }
-
-
-  void calcBattle(
-    List<int> lnd_a,
-    List<int> air_a,
-    List<int> sea_a,
-    List<int> lnd_b,
-    List<int> air_b,
-    List<int> sea_b,
-  ) {
-    final wrdice.DartArmy da = wrdice.DartArmy(
-      lnd_a,
-      air_a,
-      sea_a,
-      List<int>.filled(5, -1),
-      List<int>.filled(5, 0),
-      List<int>.filled(5, -1),
-      List<int>.filled(5, 0),
-      List<int>.filled(5, -1),
-      List<int>.filled(5, 0),
+    asyncResult = addPlotsToResult(
+      wrdice.runBattleAsync(army_a, army_b, fa, bc),
     );
-    final wrdice.DartArmy db = wrdice.DartArmy(
-      lnd_b,
-      air_b,
-      sea_b,
-      List<int>.filled(5, -1),
-      List<int>.filled(5, 0),
-      List<int>.filled(5, -1),
-      List<int>.filled(5, 0),
-      List<int>.filled(5, -1),
-      List<int>.filled(5, 0),
-    );
-
-    final bool fa = true;
-    final bool bc = true;
-    asyncResult = wrdice.runBattleAsync(da, db, fa, bc);
   }
 
   // Land: 2 top + 3 main = 5 per column
@@ -269,27 +269,28 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
   Stats? statistics; // results from FFI or mock
 
   // Different icons for Land / Sea
-  final List<IconData> landTopIcons = [
-    Icons.numbers_rounded,
-    Icons.numbers_rounded,
-    Icons.landscape, 
-    Icons.agriculture,
-    Icons.numbers_rounded,
-    ];
-  final List<IconData> landMainIcons = [
-    Icons.terrain,
-    Icons.forest,
-    Icons.grass,
-    Icons.numbers_rounded,
-    Icons.numbers_rounded,
+  final List<Image> landTopIcons = [
+    Image.asset("resources/air.png"),
+    Image.asset("resources/air.png"),
+    Image.asset("resources/green_air.jpg", scale: 0.25),
+    Image.asset("resources/red_air.jpg"),
+    Image.asset("resources/air.png"),
   ];
 
-  final List<IconData> seaMainIcons = [
-    Icons.water,
-    Icons.waves,
-    Icons.surfing,
-    Icons.beach_access,
-    Icons.numbers_rounded,
+  final List<Image> landMainIcons = [
+    Image.asset("resources/yellow_ground.jpg"),
+    Image.asset("resources/blue_ground.jpg"),
+    Image.asset("resources/green_ground.jpg"),
+    Image.asset("resources/land.png"),
+    Image.asset("resources/land.png"),
+  ];
+
+  final List<Image> seaMainIcons = [
+    Image.asset("resources/yellow_sea.jpg"),
+    Image.asset("resources/blue_sea.jpg"),
+    Image.asset("resources/green_sea.jpg"),
+    Image.asset("resources/red_sea.png"),
+    Image.asset("resources/land.png"),
   ];
 
   Future<void> _showInputDialog(
@@ -372,9 +373,9 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
                   currentValues[column][iconIndex] = tempValue.toInt();
                 });
                 late double value;
-                if (isAir){
+                if (isAir) {
                   value = airStanceFractions[column][iconIndex];
-                } else if (isLand){
+                } else if (isLand) {
                   value = landStanceFractions[column][iconIndex];
                 } else {
                   value = seaStanceFractions[column][iconIndex];
@@ -438,11 +439,13 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
             Column(
               children: [
                 IconButton(
-                  icon: Icon(
-                    icons[i],
-                    size: 30,
-                    color: isLand ? Colors.brown : Colors.blueAccent,
-                  ),
+                  icon: icons[i],
+                  iconSize: 1,
+                  //icon: Icon(
+                  //  icons[i],
+                  //  size: 30,
+                  //  color: isLand ? Colors.brown : Colors.blueAccent,
+                  //),
                   onPressed: () =>
                       _showInputDialog(columnIndex, i, isLand, isAir),
                 ),
@@ -474,7 +477,7 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
     );
   }
 
-  Widget _buildColumnContent(int columnIndex, bool isLand) {
+  Widget _buildColumnContent(int columnIndex, bool isLand, Color color) {
     final iconValues = isLand ? landIconValues : seaIconValues;
 
     // Top: first two icons
@@ -484,6 +487,71 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
 
     return Expanded(
       child: Card(
+        color: color,
+        margin: const EdgeInsets.all(8),
+        elevation: 3,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: ListView(
+            children: [
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Wrap(
+                    //alignment: WrapAlignment.center,
+                    //spacing: 16,
+                    //runSpacing: 12,
+                    children: List.generate(topValues.length, (i) {
+                      return _buildUnitSelection(
+                        columnIndex,
+                        i + offset_air,
+                        isLand,
+                        true,
+                      );
+                    }),
+                  ),
+                  //const Divider(
+                  //  thickness: 5,
+                  //  color: Color.fromARGB(128, 25, 25, 25),
+                  //),
+                  Wrap(
+                    alignment: WrapAlignment.center,
+                    spacing: 16,
+                    runSpacing: 12,
+                    children: List.generate(mainValues.length, (i) {
+                      return _buildUnitSelection(columnIndex, i, isLand, false);
+                    }),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildColumnBarPlot(int columnIndex, bool isLand, Color color) {
+    //List<int> groundUnits = isLand ? landIconValues[columnIndex] : seaIconValues[columnIndex];
+    //List<int> airUnits = airIconValues[columnIndex];
+    //List<int> units = airUnits + groundUnits;
+
+    List<bool> isAir = [true, false];
+
+    List<Padding> unitGraphs = [];
+    for (bool _air in isAir) {
+      for (int i = 0; i < 5; i++) {
+        if (_hasUnitsForPlot(columnIndex, i, isLand, _air)) {
+          unitGraphs.add(_buildUnitBarPlot(columnIndex, i, isLand, _air));
+        }
+      }
+    }
+
+    return Expanded(
+      child: Card(
+        color: color,
         margin: const EdgeInsets.all(8),
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -499,18 +567,7 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
                     alignment: WrapAlignment.center,
                     spacing: 16,
                     runSpacing: 12,
-                    children: List.generate(topValues.length, (i) {
-                      return _buildUnitSelection(columnIndex, i+offset_air, isLand, true);
-                    }),
-                  ),
-                  const Divider(thickness: 1.2),
-                  Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: 16,
-                    runSpacing: 12,
-                    children: List.generate(mainValues.length, (i) {
-                      return _buildUnitSelection(columnIndex, i, isLand, false);
-                    }),
+                    children: unitGraphs,
                   ),
                 ],
               ),
@@ -543,8 +600,8 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
         Expanded(
           child: Row(
             children: [
-              _buildColumnContent(0, _isLand),
-              _buildColumnContent(1, _isLand),
+              _buildColumnContent(0, _isLand, _blue),
+              _buildColumnContent(1, _isLand, _red),
             ],
           ),
         ),
@@ -558,9 +615,15 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
   }
 
   Widget _buildPieChart() {
-    if (!asyncResultCalcluated) {
+    if (!asyncResult.isCompleted) {
       return const Center(child: Text("No data yet. Please calculate."));
     }
+    Map<pieKey, Color> colors = {
+      pieKey.Blue: _blue,
+      pieKey.Red: _red,
+      pieKey.Draw: Colors.amberAccent,
+      pieKey.MutualDestruction: Colors.brown,
+    };
     return Padding(
       padding: const EdgeInsets.all(24),
       child: PieChart(
@@ -568,9 +631,10 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
           sections: statistics!.pieData.entries
               .map(
                 (e) => PieChartSectionData(
-                  value: e.value,
-                  title: "${e.key}\n${e.value.toStringAsFixed(0)}%",
+                  value: e.value.$2,
+                  title: "${e.value.$1}\n${e.value.$2.toStringAsFixed(2)}%",
                   radius: 80,
+                  color: colors[e.key],
                   titleStyle: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.bold,
@@ -583,33 +647,103 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
     );
   }
 
+  bool _hasUnitsForPlot(int columnIndex, int idx, bool isLand, bool isAir) {
+    final stats = _getUnitStats(columnIndex, isLand, isAir);
+    final units = _getUnitCount(columnIndex, idx, isLand, isAir);
+    return (units > 0 && stats[idx].size > 0);
+  }
+
+  int _getUnitCount(int columnIndex, int idx, bool isLand, bool isAir) {
+    if (isAir) {
+      return airIconValues[columnIndex][idx];
+    } else if (isLand) {
+      return landIconValues[columnIndex][idx];
+    } else {
+      return seaIconValues[columnIndex][idx];
+    }
+  }
+
+  List<wrdice.DartSurvived> _getUnitStats(
+    int columnIndex,
+    bool isLand,
+    bool isAir,
+  ) {
+    late pieKey pk;
+    if (columnIndex == 0) {
+      pk = pieKey.Blue;
+    } else if (columnIndex == 1) {
+      pk = pieKey.Red;
+    }
+    late List<wrdice.DartSurvived> barData;
+    if (isAir) {
+      barData = statistics!.barData[pk]!.air;
+    } else if (isLand) {
+      barData = statistics!.barData[pk]!.land;
+    } else {
+      barData = statistics!.barData[pk]!.sea;
+    }
+    return barData;
+  }
+
+  Padding _buildUnitBarPlot(int columnIndex, int i, bool isLand, bool isAir) {
+    late List<wrdice.DartSurvived> barData = _getUnitStats(
+      columnIndex,
+      isLand,
+      isAir,
+    );
+    late List<BarChartGroupData> barroddata = [];
+    for (int idx = 0; idx < barData[i].size; idx++) {
+      if (barData[i].count[idx] > 0) {
+        barroddata.add(
+          BarChartGroupData(
+            x: idx,
+            barRods: [
+              BarChartRodData(toY: barData[i].odds[idx], color: unitColors[i]),
+            ],
+          ),
+        );
+      }
+    }
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: SizedBox(
+        height: 250, // Set a fixed height for the chart
+        child: BarChart(
+          BarChartData(
+            borderData: FlBorderData(show: false),
+            titlesData: FlTitlesData(
+              show: true,
+              rightTitles: const AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+              topTitles: const AxisTitles(
+                sideTitles: SideTitles(showTitles: false),
+              ),
+              bottomTitles: AxisTitles(
+                sideTitles: SideTitles(showTitles: true, reservedSize: 35),
+              ),
+              leftTitles: const AxisTitles(
+                sideTitles: SideTitles(showTitles: true, reservedSize: 45),
+              ),
+            ),
+            barGroups: barroddata,
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildBarChart() {
-    if (statistics == null) {
+    if (!asyncResult.isCompleted) {
       return const Center(child: Text("No data yet. Please calculate."));
     }
 
-    final barData = statistics!.barData;
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: BarChart(
-        BarChartData(
-          titlesData: FlTitlesData(
-            bottomTitles: AxisTitles(
-              sideTitles: SideTitles(
-                showTitles: true,
-                getTitlesWidget: (value, meta) =>
-                    Text('Icon ${value.toInt() + 1}'),
-              ),
-            ),
-          ),
-          borderData: FlBorderData(show: false),
-          barGroups: List.generate(barData.length, (i) {
-            return BarChartGroupData(
-              x: i,
-              barRods: [BarChartRodData(toY: barData[i], width: 16)],
-            );
-          }),
-        ),
+    return Expanded(
+      child: Row(
+        children: [
+          _buildColumnBarPlot(0, _isLand, _blue),
+          _buildColumnBarPlot(1, _isLand, _red),
+        ],
       ),
     );
   }
