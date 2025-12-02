@@ -34,6 +34,7 @@ dependencies:
   wrdice: 
     path: ../../wrdice
   wheel_picker: ^0.2.2
+  material_symbols_icons: ^4.2874.0
 
 
   # The following adds the Cupertino Icons font to your application.
