@@ -34,6 +34,7 @@ const List<Color> unitColors = [
 class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
   int _selectedNavIndex = 0; // 0 = Units, 1 = Pie, 2 = Bar
   bool _isLand = true;
+  bool _withBatchCap = true;
   late Completer<wrdice.DartSimStats> asyncResult = Completer();
 
   Completer<wrdice.DartSimStats> addPlotsToResult(
@@ -70,7 +71,7 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
     List<wrdice.DartDice> dice_list = wrdice.updateDiceWithBatchCap(
       getArmy(0),
       getArmy(1),
-      true,
+      _withBatchCap,
     );
     for (final (columnIdx, dice) in dice_list.indexed) {
       setState(() {
@@ -147,6 +148,97 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
     asyncResult = addPlotsToResult(
       wrdice.runBattleAsync(army_a, army_b, fa, bc),
     );
+  }
+
+  void _resetUnits() {
+    landIconValues = [
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+    ];
+    landIconStanceOff = [
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+    ];
+    landIconStanceDef = [
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+    ];
+    landStanceFractions = [
+      [0.0, 0.0, 0.0, 0.0, 0.0],
+      [0.0, 0.0, 0.0, 0.0, 0.0],
+    ];
+    airStanceFractions = [
+      [0.0, 0.0, 0.0, 0.0, 0.0],
+      [0.0, 0.0, 0.0, 0.0, 0.0],
+    ];
+
+    seaStanceFractions = [
+      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+      [0.0, 0.0, 0.0, 0.0, 0.0, 0.0],
+    ];
+
+    // Sea: 2 top + 4 main = 6 per column
+    airIconValues = [
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+    ];
+    airIconStanceOff = [
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+    ];
+    airIconStanceDef = [
+      [0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0],
+    ];
+
+    // Sea: 2 top + 4 main = 6 per column
+    seaIconValues = [
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+    ];
+    seaIconStanceOff = [
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+    ];
+    seaIconStanceDef = [
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+    ];
+
+    airDiceVsAir = [
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+    ];
+
+    landDiceVsAir = [
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+    ];
+
+    seaDiceVsAir = [
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+    ];
+
+    airDiceVsGround = [
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+    ];
+
+    landDiceVsGround = [
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+    ];
+
+    seaDiceVsGround = [
+      [0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0],
+    ];
+
+    diceTotal = [
+      [0, 0],
+      [0, 0],
+    ];
   }
 
   // Land: 2 top + 3 main = 5 per column
@@ -467,13 +559,13 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
     ButtonStyle get_button_style(bool isLand, bool isAir) {
       if (isAir) {
         return ElevatedButton.styleFrom(
-          minimumSize: Size.zero, 
+          minimumSize: Size.zero,
           shape: CircleBorder(),
           padding: EdgeInsets.zero,
         );
       } else if (isLand) {
         return ElevatedButton.styleFrom(
-          minimumSize: Size.zero, 
+          minimumSize: Size.zero,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(10.0), // <--add this
           ),
@@ -481,7 +573,7 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
         );
       } else {
         return ElevatedButton.styleFrom(
-          minimumSize: Size.zero, 
+          minimumSize: Size.zero,
           shape: BeveledRectangleBorder(
             borderRadius: BorderRadius.circular(20.0), // <--add this
           ),
@@ -510,8 +602,7 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
       children: [
         Text(def[i].toString()),
         Flexible(
-          child: 
-          Slider(
+          child: Slider(
             value: fac[i],
             min: 0.0,
             max: 1.0,
@@ -615,11 +706,11 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
     return Expanded(
       child: Card(
         color: color,
-        margin: const EdgeInsets.all(8),
+        margin: const EdgeInsets.all(3),
         elevation: 3,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         child: Padding(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.all(3),
           child: ListView(
             children: [
               Column(
@@ -628,8 +719,8 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
                 children: [
                   Wrap(
                     alignment: WrapAlignment.center,
-                    spacing: 16,
-                    runSpacing: 12,
+                    spacing: 5,
+                    runSpacing: 3,
                     children: unitGraphs,
                   ),
                 ],
@@ -642,24 +733,52 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
   }
 
   Widget _buildUnitsPage() {
+    Widget lndSeaSelector = Padding(
+      padding: const EdgeInsets.all(8),
+      child: SegmentedButton<bool>(
+        segments: const [
+          ButtonSegment(value: true, label: Text('Land')),
+          ButtonSegment(value: false, label: Text('Sea')),
+        ],
+        selected: {_isLand},
+        onSelectionChanged: (v) {
+          _resetUnits();
+          setState(() {
+            _isLand = v.first;
+          });
+        },
+      ),
+    );
+    Widget batchCapSelector = Padding(
+      padding: const EdgeInsets.all(8),
+      child: SegmentedButton<bool>(
+        segments: const [ButtonSegment(value: true, label: Text('Batch Cap'))],
+        selected: {_withBatchCap},
+        showSelectedIcon: false,
+        emptySelectionAllowed: true,
+        onSelectionChanged: (v) {
+          if (v.isEmpty) {
+            setState(() {
+              _withBatchCap = false;
+            });
+          } else {
+            setState(() {
+              _withBatchCap = true;
+            });
+          }
+        },
+      ),
+    );
+
     return Column(
       children: [
-        // Switch Land / Sea
-        Padding(
-          padding: const EdgeInsets.all(8),
-          child: SegmentedButton<bool>(
-            segments: const [
-              ButtonSegment(value: true, label: Text('Land')),
-              ButtonSegment(value: false, label: Text('Sea')),
-            ],
-            selected: {_isLand},
-            onSelectionChanged: (v) {
-              setState(() {
-                _isLand = v.first;
-              });
-            },
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [lndSeaSelector, batchCapSelector],
         ),
+
+        // Switch Land / Sea
         Expanded(
           child: Row(
             children: [
@@ -793,12 +912,16 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
       }
     }
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(5),
       child: SizedBox(
         height: 250, // Set a fixed height for the chart
         child: BarChart(
           BarChartData(
             maxY: 1.0,
+            gridData: FlGridData(
+              drawHorizontalLine: true,
+              drawVerticalLine: false,
+            ),
             borderData: FlBorderData(show: false),
             barTouchData: BarTouchData(enabled: false),
             titlesData: FlTitlesData(
@@ -810,10 +933,10 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
                 sideTitles: SideTitles(showTitles: false),
               ),
               bottomTitles: AxisTitles(
-                sideTitles: SideTitles(showTitles: true, reservedSize: 35),
+                sideTitles: SideTitles(showTitles: true, reservedSize: 25),
               ),
               leftTitles: const AxisTitles(
-                sideTitles: SideTitles(showTitles: true, reservedSize: 45),
+                sideTitles: SideTitles(showTitles: true, reservedSize: 30),
               ),
             ),
             barGroups: barroddata,
