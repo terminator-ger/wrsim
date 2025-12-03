@@ -289,23 +289,23 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
     Image.asset("resources/air.png"),
     Image.asset("resources/air.png"),
     Image.asset("resources/green_air.jpg"),
-    Image.asset("resources/red_air.jpg", fit: BoxFit.contain),
-    Image.asset("resources/air.png", fit: BoxFit.contain),
+    Image.asset("resources/red_air.jpg", fit: BoxFit.cover),
+    Image.asset("resources/air.png", fit: BoxFit.cover),
   ];
 
   final List<Image> landMainIcons = [
-    Image.asset("resources/yellow_ground.jpg", fit: BoxFit.contain),
-    Image.asset("resources/blue_ground.jpg", fit: BoxFit.contain),
-    Image.asset("resources/green_ground.jpg", fit: BoxFit.contain),
+    Image.asset("resources/yellow_ground.jpg", fit: BoxFit.cover),
+    Image.asset("resources/blue_ground.jpg", fit: BoxFit.cover),
+    Image.asset("resources/green_ground.jpg", fit: BoxFit.cover),
     Image.asset("resources/land.png"),
     Image.asset("resources/land.png"),
   ];
 
   final List<Image> seaMainIcons = [
-    Image.asset("resources/yellow_sea.jpg", fit: BoxFit.contain),
-    Image.asset("resources/blue_sea.jpg", fit: BoxFit.contain),
-    Image.asset("resources/green_sea.jpg", fit: BoxFit.contain),
-    Image.asset("resources/red_sea.jpg", fit: BoxFit.contain),
+    Image.asset("resources/yellow_sea.jpg", fit: BoxFit.cover),
+    Image.asset("resources/blue_sea.jpg", fit: BoxFit.cover),
+    Image.asset("resources/green_sea.jpg", fit: BoxFit.cover),
+    Image.asset("resources/red_sea.jpg", fit: BoxFit.cover),
     Image.asset("resources/land.png"),
   ];
 
@@ -338,41 +338,45 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
           title: const Text("Enter a value"),
           content: StatefulBuilder(
             builder: (context, setDialogState) {
-              return Row(
+              return Wrap(
                 children: [
-                  Expanded(
-                    flex: 2,
-                    child: Slider(
-                      min: 0,
-                      max: 30,
-                      divisions: 30,
-                      value: tempValue,
-                      label: tempValue.toInt().toString(),
-                      onChanged: (value) {
-                        setDialogState(() {
-                          tempValue = value;
-                          controller.text = value.toInt().toString();
-                        });
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: TextField(
-                      controller: controller,
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        border: OutlineInputBorder(),
+                  Row(
+                    children: [
+                      Flexible(
+                        flex: 2,
+                        child: Slider(
+                          min: 0,
+                          max: 30,
+                          divisions: 30,
+                          value: tempValue,
+                          label: tempValue.toInt().toString(),
+                          onChanged: (value) {
+                            setDialogState(() {
+                              tempValue = value;
+                              controller.text = value.toInt().toString();
+                            });
+                          },
+                        ),
                       ),
-                      onChanged: (val) {
-                        final parsed = int.tryParse(val);
-                        if (parsed != null && parsed >= 0 && parsed <= 30) {
-                          setDialogState(() {
-                            tempValue = parsed.toDouble();
-                          });
-                        }
-                      },
-                    ),
+                      const SizedBox(width: 8),
+                      Flexible(
+                        child: TextField(
+                          controller: controller,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            border: OutlineInputBorder(),
+                          ),
+                          onChanged: (val) {
+                            final parsed = int.tryParse(val);
+                            if (parsed != null && parsed >= 0 && parsed <= 30) {
+                              setDialogState(() {
+                                tempValue = parsed.toDouble();
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               );
@@ -460,24 +464,54 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
       dice_air = seaDiceVsAir[columnIndex];
       dice_gnd = seaDiceVsGround[columnIndex];
     }
+    ButtonStyle get_button_style(bool isLand, bool isAir) {
+      if (isAir) {
+        return ElevatedButton.styleFrom(
+          minimumSize: Size.zero, 
+          shape: CircleBorder(),
+          padding: EdgeInsets.zero,
+        );
+      } else if (isLand) {
+        return ElevatedButton.styleFrom(
+          minimumSize: Size.zero, 
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10.0), // <--add this
+          ),
+          padding: EdgeInsets.zero,
+        );
+      } else {
+        return ElevatedButton.styleFrom(
+          minimumSize: Size.zero, 
+          shape: BeveledRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0), // <--add this
+          ),
+          padding: EdgeInsets.zero,
+        );
+      }
+    }
+
     Widget centerItem = Column(
       children: [
         Flexible(
           flex: 3,
-          child: IconButton(
-            icon: icons[i],
-            iconSize: 10,
+          child: ElevatedButton(
+            clipBehavior: Clip.antiAlias,
             onPressed: () => _showInputDialog(columnIndex, i, isLand, isAir),
+            style: get_button_style(isLand, isAir),
+            child: icons[i],
           ),
         ),
         Flexible(flex: 1, child: Text(val[i].toString())),
       ],
     );
     Widget bottomItem = Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         Text(def[i].toString()),
-        Expanded(
-          child: Slider(
+        Flexible(
+          child: 
+          Slider(
             value: fac[i],
             min: 0.0,
             max: 1.0,
@@ -506,24 +540,22 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
     Color background,
     Widget dice_left,
     Widget dice_right,
-    //List<int> dice_left,
-    //List<int> dice_right,
-    //int i,
     Widget centerItem, [
     Widget? bottomItem,
   ]) {
     return Card(
       color: background,
       child: Container(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(5),
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: 150),
+          constraints: BoxConstraints(minHeight: 50, maxHeight: 100),
           child: Column(
             children: [
               Flexible(
                 flex: 2,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Flexible(flex: 1, child: dice_left),
                     Flexible(flex: 2, child: centerItem),
@@ -631,20 +663,20 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
         Expanded(
           child: Row(
             children: [
-              Expanded(
+              Flexible(
                 child: Column(
                   children: [
                     _diceCard(
                       Colors.blue,
                       _getDiceDisplay(diceTotal[0], 0, true),
                       _getDiceDisplay(diceTotal[0], 1, false),
-                      Text("RedFor"),
+                      Text("BlueFor"),
                     ),
                     _buildColumnContent(0, _isLand, _blue),
                   ],
                 ),
               ),
-              Expanded(
+              Flexible(
                 child: Column(
                   children: [
                     _diceCard(
