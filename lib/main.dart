@@ -6,6 +6,7 @@ import 'package:wheel_picker/wheel_picker.dart';
 import 'package:wrdice/wrdice.dart' as wrdice;
 import 'package:wrdice/wrdice_bindings_generated.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
+import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 enum pieKey { Blue, Red, Draw, MutualDestruction }
 
@@ -427,7 +428,7 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: const Text("Enter a value"),
+          title: const Text("Unit strength"),
           content: StatefulBuilder(
             builder: (context, setDialogState) {
               return Wrap(
@@ -436,19 +437,60 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
                     children: [
                       Flexible(
                         flex: 2,
-                        child: Slider(
-                          min: 0,
-                          max: 30,
-                          divisions: 30,
-                          value: tempValue,
-                          label: tempValue.toInt().toString(),
-                          onChanged: (value) {
-                            setDialogState(() {
-                              tempValue = value;
-                              controller.text = value.toInt().toString();
-                            });
-                          },
+                        child: SfRadialGauge(
+                          axes: <RadialAxis>[
+                            RadialAxis(
+                              minimum: 0,
+                              maximum: 30,
+                              showLabels: true,
+                              showTicks: true,
+                              pointers: <GaugePointer>[
+                                MarkerPointer(
+                                  value: tempValue,
+                                  enableDragging: true,
+                                  markerHeight: 25,
+                                  markerWidth: 25,
+                                  markerType: MarkerType.circle,
+                                  color: Colors.lightBlue,
+                                  borderWidth: 3,
+                                  borderColor: Colors.black,
+                                  onValueChanged: (value) {
+                                    setDialogState(() {
+                                      tempValue = value;
+                                      controller.text = value
+                                          .toInt()
+                                          .toString();
+                                    });
+                                    setState((){
+                                      tempValue = value;
+                                    });
+                                  },
+                                  onValueChanging: (value) {
+                                      tempValue = value.value;
+                                  },
+                                ),
+                              ],
+                              axisLineStyle: AxisLineStyle(
+                                cornerStyle: CornerStyle.bothCurve,
+                                color: Colors.white30,
+                                thickness: 25,
+                              ),
+                            ),
+                          ],
                         ),
+                        //Slider(
+                        //  min: 0,
+                        //  max: 30,
+                        //  divisions: 30,
+                        //  value: tempValue,
+                        //  label: tempValue.toInt().toString(),
+                        //  onChanged: (value) {
+                        //    setDialogState(() {
+                        //      tempValue = value;
+                        //      controller.text = value.toInt().toString();
+                        //    });
+                        //  },
+                        //),
                       ),
                       const SizedBox(width: 8),
                       Flexible(
@@ -596,24 +638,28 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
         Flexible(flex: 1, child: Text(val[i].toString())),
       ],
     );
-    Widget bottomItem = Row(
-      mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: [
-        Text(def[i].toString()),
-        Flexible(
-          child: Slider(
-            value: fac[i],
-            min: 0.0,
-            max: 1.0,
-            divisions: val[i] > 0 ? val[i] : 100,
-            onChanged: (double value) =>
-                _updateStance(columnIndex, value, i, isLand, isAir),
+    Widget bottomItem = Visibility(
+      visible: val[i] > 0,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Text(def[i].toString()),
+          Flexible(
+            child: Slider(
+              value: fac[i],
+              min: 0.0,
+              max: 1.0,
+              divisions: val[i] > 0 ? val[i] : 100,
+              onChanged: (double value) =>
+                  _updateStance(columnIndex, value, i, isLand, isAir),
+            ),
           ),
-        ),
-        Text(off[i].toString()),
-      ],
+          Text(off[i].toString()),
+        ],
+      ),
     );
+
     Color background = isAir
         ? const Color.fromARGB(50, 3, 167, 200)
         : const Color.fromARGB(50, 255, 174, 99);
@@ -670,13 +716,15 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
       return _buildUnitSelection(columnIndex, i, isLand, false);
     });
     return Expanded(
-      child: Card(
-        color: color,
-        margin: const EdgeInsets.all(8),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Padding(
-          padding: const EdgeInsets.all(10),
-          child: ListView(
+      child:
+          //Card(
+          //  color: color,
+          //  margin: const EdgeInsets.all(8),
+          //  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          //  child: Padding(
+          //    padding: const EdgeInsets.all(10),
+          //    child:
+          ListView(
             //shrinkWrap: true,
             scrollDirection: Axis.vertical,
             children: [
@@ -687,9 +735,9 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
               ),
             ],
           ),
-        ),
-      ),
     );
+    //  ),
+    //);
   }
 
   Widget _buildColumnBarPlot(int columnIndex, bool isLand, Color color) {
@@ -766,6 +814,8 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
               _withBatchCap = true;
             });
           }
+          updateDice(0);
+          updateDice(1);
         },
       ),
     );
@@ -977,8 +1027,8 @@ class _LandSeaStatsAppState extends State<LandSeaStatsApp> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Units & Statistics")),
-      body: _buildCurrentPage(),
+      // appBar: AppBar(title: const Text("Units & Statistics")),
+      body: SafeArea(child: _buildCurrentPage()),
       floatingActionButton: _selectedNavIndex == 0
           ? FloatingActionButton(
               onPressed: _calculate,
