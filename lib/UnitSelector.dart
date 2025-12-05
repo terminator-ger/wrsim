@@ -8,13 +8,14 @@ class UnitSelector extends StatefulWidget {
     super.key,
     //this.value = 0,
     required this.state,
-    required this.onChanged,
+    required this.onUnitCountChanged,
     required this.unitIdentification,
+    required this.onStanceFractionChanged,
   });
   UnitIdentification unitIdentification;
   UnitState state;
-  //int value;
-  ValueChanged<int> onChanged;
+  ValueChanged<int> onUnitCountChanged;
+  ValueChanged<double> onStanceFractionChanged;
 
   final Map<String, List<Image>> icons = {
     "air": [
@@ -43,8 +44,14 @@ class UnitSelector extends StatefulWidget {
   @override
   State<StatefulWidget> createState() => _UniteSelectorState();
 
-  int getUnitCount(){
-    return state.unitCount[unitIdentification.columnIndex][unitIdentification.unitIdx];
+  int getUnitCount() {
+    return state.unitCount[unitIdentification.columnIndex][unitIdentification
+        .unitIdx];
+  }
+
+  double getStanceFracetion() {
+    return state.stanceFractions[unitIdentification
+        .columnIndex][unitIdentification.unitIdx];
   }
 }
 
@@ -78,7 +85,6 @@ class _UniteSelectorState extends State<UnitSelector> {
     }
   }
 
-
   void toggle() {
     _overlayController.toggle();
   }
@@ -100,23 +106,44 @@ class _UniteSelectorState extends State<UnitSelector> {
       link: _link,
       targetAnchor: Alignment.center,
       followerAnchor: Alignment.center,
-      child: UnitSelectorOverlay(
-        value: widget.getUnitCount().toDouble(),
-        onToggled: (void none) {
-          _overlayController.toggle();
-          return;
-        },
-        onChanged: (double val) {
-          //widget.value = val.toInt();
-          widget.onChanged(val.toInt());
-        },
+      child: FractionallySizedBox(
+        widthFactor: 1.0,
+        heightFactor: 1.0,
+        child: Column(
+          children: [
+            UnitSelectorOverlay(
+              value: widget.getUnitCount().toDouble(),
+              onToggled: (void none) {
+                _overlayController.toggle();
+                return;
+              },
+              onChanged: (double val) {
+                ;
+                widget.onUnitCountChanged(val.toInt());
+              },
+            ),
+            UnitSelectorOverlay(
+              value: widget.getStanceFracetion(),
+              min: 0.0,
+              max: 1.0,
+              onToggled: (void none) {
+                _overlayController.toggle();
+                return;
+              },
+              onChanged: (double val) {
+                ;
+                widget.onStanceFractionChanged(val);
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return Stack(
       children: [
         Flexible(flex: 1, child: Text(widget.getUnitCount().toString())),
         Flexible(

@@ -6,10 +6,14 @@ class UnitSelectorOverlay extends StatefulWidget {
   final double value;
   final ValueChanged<double> onChanged;
   final Function(void) onToggled;
+  final double min;
+  final double max;
 
   const UnitSelectorOverlay({
     super.key,
     required this.value,
+    this.min=0,
+    this.max=30,
     required this.onToggled,
     required this.onChanged,
   });
@@ -39,8 +43,8 @@ class _UnitselectoroverlayState extends State<UnitSelectorOverlay> {
                   startAngle: 0,
                   endAngle: 180,
                   isInversed: true,
-                  minimum: 0,
-                  maximum: 30,
+                  minimum: widget.min,
+                  maximum: widget.max,
                   showLabels: false,
                   showTicks: true,
                   pointers: <GaugePointer>[

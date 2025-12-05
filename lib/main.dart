@@ -74,13 +74,19 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
     });
   }
 
-  Null Function(int val) recalc(UnitIdentification x) {
+  Null Function(int val) updateUnitCount(UnitIdentification x) {
     return (int val) {
-      updateUnitCount(x.columnIndex, val, x.unitIdx, x.isAir, x.isLand);
+      _updateUnitCount(x.columnIndex, val, x.unitIdx, x.isAir, x.isLand);
     };
   }
 
-  void updateUnitCount(
+  Null Function(double val) updateStance(UnitIdentification x) {
+    return (double val) {
+      _updateStance(x.columnIndex, val, x.unitIdx, x.isAir, x.isLand);
+    };
+  }
+
+  void _updateUnitCount(
     int columnIdx,
     int val,
     int unitIdx,
@@ -298,7 +304,8 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
 
     Widget centerItem = UnitSelector(
       state: state,
-      onChanged: recalc(unit),
+      onUnitCountChanged: updateUnitCount(unit),
+      onStanceFractionChanged: updateStance(unit),
       unitIdentification: unit,
     );
 
