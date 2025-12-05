@@ -1,0 +1,147 @@
+import 'package:flutter/material.dart';
+import 'package:warroombattlesim/UnitIdentification.dart';
+import 'package:warroombattlesim/UnitSelectorOverlay.dart';
+import 'package:warroombattlesim/UnitState.dart';
+
+class UnitSelector extends StatefulWidget {
+  UnitSelector({
+    super.key,
+    //this.value = 0,
+    required this.state,
+    required this.onChanged,
+    required this.unitIdentification,
+  });
+  UnitIdentification unitIdentification;
+  UnitState state;
+  //int value;
+  ValueChanged<int> onChanged;
+
+  final Map<String, List<Image>> icons = {
+    "air": [
+      Image.asset("resources/air.png"),
+      Image.asset("resources/air.png"),
+      Image.asset("resources/green_air.jpg"),
+      Image.asset("resources/red_air.jpg", fit: BoxFit.cover),
+      Image.asset("resources/air.png", fit: BoxFit.cover),
+    ],
+    "lnd": [
+      Image.asset("resources/yellow_ground.jpg", fit: BoxFit.cover),
+      Image.asset("resources/blue_ground.jpg", fit: BoxFit.cover),
+      Image.asset("resources/green_ground.jpg", fit: BoxFit.cover),
+      Image.asset("resources/land.png"),
+      Image.asset("resources/land.png"),
+    ],
+    "sea": [
+      Image.asset("resources/yellow_sea.jpg", fit: BoxFit.cover),
+      Image.asset("resources/blue_sea.jpg", fit: BoxFit.cover),
+      Image.asset("resources/green_sea.jpg", fit: BoxFit.cover),
+      Image.asset("resources/red_sea.jpg", fit: BoxFit.cover),
+      Image.asset("resources/land.png"),
+    ],
+  };
+
+  @override
+  State<StatefulWidget> createState() => _UniteSelectorState();
+
+  int getUnitCount(){
+    return state.unitCount[unitIdentification.columnIndex][unitIdentification.unitIdx];
+  }
+}
+
+class _UniteSelectorState extends State<UnitSelector> {
+  final LayerLink _link = LayerLink();
+  var _overlayController = OverlayPortalController();
+
+  ButtonStyle get_button_style(bool isLand, bool isAir) {
+    if (isAir) {
+      return ElevatedButton.styleFrom(
+        minimumSize: Size.zero,
+        shape: CircleBorder(),
+        padding: EdgeInsets.zero,
+      );
+    } else if (isLand) {
+      return ElevatedButton.styleFrom(
+        minimumSize: Size.zero,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10.0), // <--add this
+        ),
+        padding: EdgeInsets.zero,
+      );
+    } else {
+      return ElevatedButton.styleFrom(
+        minimumSize: Size.zero,
+        shape: BeveledRectangleBorder(
+          borderRadius: BorderRadius.circular(20.0), // <--add this
+        ),
+        padding: EdgeInsets.zero,
+      );
+    }
+  }
+
+
+  void toggle() {
+    _overlayController.toggle();
+  }
+
+  Image getIcon() {
+    late String key;
+    if (widget.unitIdentification.isAir) {
+      key = "air";
+    } else if (widget.unitIdentification.isLand) {
+      key = "lnd";
+    } else {
+      key = "sea";
+    }
+    return widget.icons[key]!.elementAt(widget.unitIdentification.unitIdx);
+  }
+
+  Widget overlayChildBuilder(BuildContext context) {
+    return CompositedTransformFollower(
+      link: _link,
+      targetAnchor: Alignment.center,
+      followerAnchor: Alignment.center,
+      child: UnitSelectorOverlay(
+        value: widget.getUnitCount().toDouble(),
+        onToggled: (void none) {
+          _overlayController.toggle();
+          return;
+        },
+        onChanged: (double val) {
+          //widget.value = val.toInt();
+          widget.onChanged(val.toInt());
+        },
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Flexible(flex: 1, child: Text(widget.getUnitCount().toString())),
+        Flexible(
+          flex: 3,
+          child: SizedBox(
+            height: 99,
+            child: CompositedTransformTarget(
+              link: _link,
+              child: ElevatedButton(
+                clipBehavior: Clip.antiAlias,
+                onPressed: _overlayController.toggle,
+                style: get_button_style(
+                  widget.unitIdentification.isLand,
+                  widget.unitIdentification.isAir,
+                ),
+                child: OverlayPortal(
+                  controller: _overlayController,
+                  overlayChildBuilder: overlayChildBuilder,
+                  child: getIcon(),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
