@@ -76,13 +76,13 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
 
   Null Function(int val) updateUnitCount(UnitIdentification x) {
     return (int val) {
-      _updateUnitCount(x.columnIndex, val, x.unitIdx, x.isAir, x.isLand);
+      _updateUnitCount(x.columnIndex, val, x.unitIdx, x.isLand, x.isAir);
     };
   }
 
   Null Function(double val) updateStance(UnitIdentification x) {
     return (double val) {
-      _updateStance(x.columnIndex, val, x.unitIdx, x.isAir, x.isLand);
+      _updateStance(x.columnIndex, val, x.unitIdx, x.isLand, x.isAir);
     };
   }
 
@@ -90,8 +90,8 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
     int columnIdx,
     int val,
     int unitIdx,
-    bool isAir,
     bool isLand,
+    bool isAir,
   ) {
     UnitState state = getUnitState(isAir, isLand);
     setState(() {
@@ -309,30 +309,6 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
       unitIdentification: unit,
     );
 
-    Widget bottomItem = Visibility(
-      visible: state.unitCount[columnIndex][i] > 0,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Text(state.stanceDef[columnIndex][i].toString()),
-          Flexible(
-            child: Slider(
-              value: state.stanceFractions[columnIndex][i],
-              min: 0.0,
-              max: 1.0,
-              divisions: state.unitCount[columnIndex][i] > 0
-                  ? state.unitCount[columnIndex][i]
-                  : 100,
-              onChanged: (double value) =>
-                  _updateStance(columnIndex, value, i, isLand, isAir),
-            ),
-          ),
-          Text(state.stanceOff[columnIndex][i].toString()),
-        ],
-      ),
-    );
-
     Color background = isAir
         ? const Color.fromARGB(50, 3, 167, 200)
         : const Color.fromARGB(50, 255, 174, 99);
@@ -342,7 +318,6 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
       _getDiceDisplay(state.diceVsAir[columnIndex], i, true),
       _getDiceDisplay(state.diceVsGround[columnIndex], i, false),
       centerItem,
-      bottomItem,
     );
 
     @override
@@ -356,9 +331,8 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
     Color background,
     Widget dice_left,
     Widget dice_right,
-    Widget centerItem, [
-    Widget? bottomItem,
-  ]) {
+    Widget centerItem,
+  ) {
     return Card(
       color: background,
       child: Container(
@@ -368,18 +342,17 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
           child: Column(
             children: [
               Flexible(
-                flex: 2,
+                flex: 1,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Flexible(flex: 1, child: dice_left),
-                    Flexible(flex: 2, child: centerItem),
+                    Flexible(flex: 1, child: centerItem),
                     Flexible(flex: 1, child: dice_right),
                   ],
                 ),
               ),
-              if (bottomItem != null) ...[Flexible(flex: 1, child: bottomItem)],
             ],
           ),
         ),

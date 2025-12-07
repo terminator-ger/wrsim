@@ -27,52 +27,40 @@ class UnitSelectorOverlay extends StatefulWidget {
 class _UnitselectoroverlayState extends State<UnitSelectorOverlay> {
   @override
   Widget build(BuildContext context) {
-    return AbsorbPointer(
-      absorbing: false,
-      child: GestureDetector(
-        onTap: () {
-          widget.onToggled(null);
-        },
-        //child: FractionallySizedBox(
-        //  widthFactor: 0.2,
-        //  heightFactor: 0.2,
-        //child: SizedBox(
-        //  height: 80,
-        child: SfRadialGauge(
-          axes: <RadialAxis>[
-            RadialAxis(
-              startAngle: widget.bowTopIsTop ? 180 : 0,
-              endAngle: widget.bowTopIsTop ? 0 : 180,
-              isInversed: !widget.bowTopIsTop,
-              minimum: widget.min,
-              maximum: widget.max,
-              showLabels: false,
-              showTicks: true,
-              pointers: <GaugePointer>[
-                MarkerPointer(
-                  value: widget.value,
-                  enableDragging: true,
-                  markerHeight: 25,
-                  markerWidth: 25,
-                  markerType: MarkerType.circle,
-                  color: Colors.lightBlue,
-                  borderWidth: 3,
-                  borderColor: Colors.black,
-                  onValueChanged: (v) {
-                    widget.onChanged.call(v);
-                  },
-                ),
-              ],
-              axisLineStyle: AxisLineStyle(
-                cornerStyle: CornerStyle.bothCurve,
-                color: Colors.white30,
-                thickness: 25,
+    return SizedBox.expand(
+      child: SfRadialGauge(
+        axes: <RadialAxis>[
+          RadialAxis(
+            startAngle: widget.bowTopIsTop ? 180 : 0,
+            endAngle: widget.bowTopIsTop ? 360 : 180,
+            isInversed: !widget.bowTopIsTop,
+            minimum: widget.min,
+            maximum: widget.max,
+            showLabels: false,
+            showTicks: true,
+            canScaleToFit: true,
+            pointers: <GaugePointer>[
+              MarkerPointer(
+                value: widget.value,
+                enableDragging: true,
+                markerHeight: 25,
+                markerWidth: 25,
+                markerType: MarkerType.circle,
+                color: Colors.lightBlue,
+                borderWidth: 3,
+                borderColor: Colors.black,
+                onValueChanged: (v) {
+                  widget.onChanged.call(v);
+                },
               ),
+            ],
+            axisLineStyle: AxisLineStyle(
+              cornerStyle: CornerStyle.bothCurve,
+              color: Colors.white70,
+              thickness: 20,
             ),
-          ],
-        ),
-        //),
-        //),
+          ),
+        ],
       ),
     );
   }
