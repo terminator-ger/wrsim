@@ -102,42 +102,64 @@ class _UniteSelectorState extends State<UnitSelector> {
   }
 
   Widget overlayChildBuilder(BuildContext context) {
-    return CompositedTransformFollower(
-      link: _link,
-      targetAnchor: Alignment.center,
-      followerAnchor: Alignment.center,
-      child: FractionallySizedBox(
-        widthFactor: 1.0,
-        heightFactor: 1.0,
-        child: Column(
-          children: [
-            UnitSelectorOverlay(
-              value: widget.getUnitCount().toDouble(),
-              onToggled: (void none) {
-                _overlayController.toggle();
-                return;
-              },
-              onChanged: (double val) {
-                ;
-                widget.onUnitCountChanged(val.toInt());
-              },
+    return
+    //SizedBox(
+    //  height: 100,
+    //  width: 50,
+    //child:
+    Stack(
+      children: [
+        CompositedTransformFollower(
+          link: _link,
+          targetAnchor: Alignment.center,
+          followerAnchor: Alignment.center,
+          child: Align(
+            alignment: AlignmentGeometry.topCenter,
+            child: Container(
+              width: 170,
+              height: 170,
+              child: UnitSelectorOverlay(
+                value: widget.getUnitCount().toDouble(),
+                onToggled: (void none) {
+                  _overlayController.toggle();
+                  return;
+                },
+                onChanged: (double val) {
+                  ;
+                  widget.onUnitCountChanged(val.toInt());
+                },
+                bowTopIsTop: true,
+              ),
             ),
-            UnitSelectorOverlay(
-              value: widget.getStanceFracetion(),
-              min: 0.0,
-              max: 1.0,
-              onToggled: (void none) {
-                _overlayController.toggle();
-                return;
-              },
-              onChanged: (double val) {
-                ;
-                widget.onStanceFractionChanged(val);
-              },
-            ),
-          ],
+          ),
         ),
-      ),
+        CompositedTransformFollower(
+          link: _link,
+          targetAnchor: Alignment.center,
+          followerAnchor: Alignment.center,
+          child: Align(
+            alignment: AlignmentGeometry.bottomCenter,
+            child: Container(
+              width: 170,
+              height: 170,
+              child: UnitSelectorOverlay(
+                value: widget.getStanceFracetion(),
+                min: 0.0,
+                max: 1.0,
+                onToggled: (void none) {
+                  _overlayController.toggle();
+                  return;
+                },
+                onChanged: (double val) {
+                  ;
+                  widget.onStanceFractionChanged(val);
+                },
+                bowTopIsTop: false,
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -145,29 +167,27 @@ class _UniteSelectorState extends State<UnitSelector> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
-        Flexible(flex: 1, child: Text(widget.getUnitCount().toString())),
-        Flexible(
-          flex: 3,
-          child: SizedBox(
-            height: 99,
-            child: CompositedTransformTarget(
-              link: _link,
-              child: ElevatedButton(
-                clipBehavior: Clip.antiAlias,
-                onPressed: _overlayController.toggle,
-                style: get_button_style(
-                  widget.unitIdentification.isLand,
-                  widget.unitIdentification.isAir,
-                ),
-                child: OverlayPortal(
-                  controller: _overlayController,
-                  overlayChildBuilder: overlayChildBuilder,
-                  child: getIcon(),
-                ),
-              ),
+        Text(widget.getUnitCount().toString()),
+        //SizedBox(
+        //  height: 99,
+        //child:
+        CompositedTransformTarget(
+          link: _link,
+          child: ElevatedButton(
+            clipBehavior: Clip.antiAlias,
+            onPressed: _overlayController.toggle,
+            style: get_button_style(
+              widget.unitIdentification.isLand,
+              widget.unitIdentification.isAir,
+            ),
+            child: OverlayPortal(
+              controller: _overlayController,
+              overlayChildBuilder: overlayChildBuilder,
+              child: getIcon(),
             ),
           ),
         ),
+        //),
       ],
     );
   }
