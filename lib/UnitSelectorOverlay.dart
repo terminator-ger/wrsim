@@ -27,7 +27,7 @@ class UnitSelectorOverlay extends StatefulWidget {
 class _UnitselectoroverlayState extends State<UnitSelectorOverlay> {
   @override
   Widget build(BuildContext context) {
-    return SizedBox.expand(
+    return Flexible(
       child: SfRadialGauge(
         axes: <RadialAxis>[
           RadialAxis(

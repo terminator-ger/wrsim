@@ -49,7 +49,7 @@ class UnitSelector extends StatefulWidget {
         .unitIdx];
   }
 
-  double getStanceFracetion() {
+  double getStanceFraction() {
     return state.stanceFractions[unitIdentification
         .columnIndex][unitIdentification.unitIdx];
   }
@@ -59,7 +59,7 @@ class _UniteSelectorState extends State<UnitSelector> {
   final LayerLink _link = LayerLink();
   var _overlayController = OverlayPortalController();
 
-  ButtonStyle get_button_style(bool isLand, bool isAir) {
+  ButtonStyle get_button_style(double radius, bool isLand, bool isAir) {
     if (isAir) {
       return ElevatedButton.styleFrom(
         minimumSize: Size.zero,
@@ -70,7 +70,7 @@ class _UniteSelectorState extends State<UnitSelector> {
       return ElevatedButton.styleFrom(
         minimumSize: Size.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.0), // <--add this
+          borderRadius: BorderRadius.circular(radius / 5), // <--add this
         ),
         padding: EdgeInsets.zero,
       );
@@ -78,7 +78,7 @@ class _UniteSelectorState extends State<UnitSelector> {
       return ElevatedButton.styleFrom(
         minimumSize: Size.zero,
         shape: BeveledRectangleBorder(
-          borderRadius: BorderRadius.circular(20.0), // <--add this
+          borderRadius: BorderRadius.circular(radius / 6), // <--add this
         ),
         padding: EdgeInsets.zero,
       );
@@ -89,7 +89,7 @@ class _UniteSelectorState extends State<UnitSelector> {
     _overlayController.toggle();
   }
 
-  Image getIcon() {
+  Image getUnitIcon() {
     late String key;
     if (widget.unitIdentification.isAir) {
       key = "air";
@@ -101,7 +101,48 @@ class _UniteSelectorState extends State<UnitSelector> {
     return widget.icons[key]!.elementAt(widget.unitIdentification.unitIdx);
   }
 
+  List<Image> getStanceIcons() {
+    // air
+    if (widget.unitIdentification.isAir &&
+        widget.unitIdentification.unitIdx == 3) {
+      return [
+        Image.asset("resources/stance_air.png", fit: BoxFit.cover),
+        Image.asset("resources/bomb.png", fit: BoxFit.cover),
+      ];
+    } else if (widget.unitIdentification.isAir &&
+        widget.unitIdentification.unitIdx == 2) {
+      return [
+        Image.asset("resources/stance_air.png", fit: BoxFit.cover),
+        Image.asset("resources/stance_ground.png", fit: BoxFit.cover),
+      ];
+      // land
+    } else if (widget.unitIdentification.isLand &&
+        widget.unitIdentification.unitIdx == 1) {
+      return [
+        Image.asset("resources/stance_air.png", fit: BoxFit.cover),
+        Image.asset("resources/stance_ground.png", fit: BoxFit.cover),
+      ];
+    } else if (widget.unitIdentification.isLand) {
+      return [
+        Image.asset("resources/stance_off.png", fit: BoxFit.cover),
+        Image.asset("resources/stance_def.png", fit: BoxFit.cover),
+      ];
+      // sea
+    } else if (widget.unitIdentification.unitIdx == 1) {
+      return [
+        Image.asset("resources/escort.png", fit: BoxFit.cover),
+        Image.asset("resources/stance_def.png", fit: BoxFit.cover),
+      ];
+    } else {
+      return [
+        Image.asset("resources/stance_air.png", fit: BoxFit.cover),
+        Image.asset("resources/stance_def.png", fit: BoxFit.cover),
+      ];
+    }
+  }
+
   Widget overlayChildBuilder(BuildContext context) {
+    List<Image> icons = getStanceIcons();
     return CompositedTransformFollower(
       link: _link,
       targetAnchor: Alignment.center,
@@ -120,18 +161,32 @@ class _UniteSelectorState extends State<UnitSelector> {
                 height: 100,
                 child: Visibility(
                   visible: widget.getUnitCount() > 0,
-                  child: UnitSelectorOverlay(
-                    value: widget.getStanceFracetion(),
-                    min: 0.0,
-                    max: 1.0,
-                    onToggled: (void none) {
-                      _overlayController.toggle();
-                      return;
-                    },
-                    onChanged: (double val) {
-                      widget.onStanceFractionChanged(val);
-                    },
-                    bowTopIsTop: true,
+                  child: Visibility(
+                    visible:
+                        //deactivate for submarines
+                        !(widget.unitIdentification.unitIdx == 0 &&
+                            !widget.unitIdentification.isAir &&
+                            !widget.unitIdentification.isLand),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Flexible(child: icons[0]),
+                        UnitSelectorOverlay(
+                          value: widget.getStanceFraction(),
+                          min: 0.0,
+                          max: 1.0,
+                          onToggled: (void none) {
+                            _overlayController.toggle();
+                            return;
+                          },
+                          onChanged: (double val) {
+                            widget.onStanceFractionChanged(val);
+                          },
+                          bowTopIsTop: true,
+                        ),
+                        Flexible(child: icons[1]),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -162,24 +217,33 @@ class _UniteSelectorState extends State<UnitSelector> {
     return Center(
       child: Stack(
         children: [
-          CompositedTransformTarget(
-            link: _link,
-            child: ElevatedButton(
-              clipBehavior: Clip.antiAlias,
-              onPressed: _overlayController.toggle,
-              style: get_button_style(
-                widget.unitIdentification.isLand,
-                widget.unitIdentification.isAir,
-              ),
-              child: OverlayPortal(
-                controller: _overlayController,
-                overlayChildBuilder: overlayChildBuilder,
-                child: getIcon(),
+          Align(
+            alignment: AlignmentGeometry.center,
+            child: CompositedTransformTarget(
+              link: _link,
+              child: LayoutBuilder(
+                builder: (context, BoxConstraints constraints) {
+                  final borderRadius = constraints.maxWidth;
+                  return ElevatedButton(
+                    clipBehavior: Clip.antiAlias,
+                    onPressed: _overlayController.toggle,
+                    style: get_button_style(
+                      borderRadius,
+                      widget.unitIdentification.isLand,
+                      widget.unitIdentification.isAir,
+                    ),
+                    child: OverlayPortal(
+                      controller: _overlayController,
+                      overlayChildBuilder: overlayChildBuilder,
+                      child: getUnitIcon(),
+                    ),
+                  );
+                },
               ),
             ),
           ),
-          AbsorbPointer(
-            absorbing: true,
+          Align(
+            alignment: AlignmentGeometry.bottomCenter,
             child: Text(widget.getUnitCount().toString()),
           ),
         ],
