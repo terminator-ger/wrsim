@@ -571,7 +571,7 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
                 child: Column(
                   children: [
                     _diceCard(
-                      Colors.blue,
+                      _blue,
                       _getDiceDisplay(appState.diceTotal[0], 0, true),
                       _getDiceDisplay(appState.diceTotal[0], 1, false),
                       Text("BlueFor"),
@@ -584,7 +584,7 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
                 child: Column(
                   children: [
                     _diceCard(
-                      Colors.red,
+                      _red,
                       _getDiceDisplay(appState.diceTotal[1], 0, true),
                       _getDiceDisplay(appState.diceTotal[1], 1, false),
                       Text("RedFor"),

@@ -363,7 +363,7 @@ packages:
   wrdice:
     dependency: "direct main"
     description:
-      path: "../wrdice_bindings"
+      path: wrdice_bindings
       relative: true
     source: path
     version: "0.0.1"

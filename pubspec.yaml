@@ -32,7 +32,7 @@ dependencies:
     sdk: flutter
   fl_chart: ^0.68.0
   wrdice: 
-    path: ../wrdice_bindings
+    path: wrdice_bindings
   wheel_picker: ^0.2.2
   material_symbols_icons: ^4.2874.0
   syncfusion_flutter_gauges: ^31.2.16
