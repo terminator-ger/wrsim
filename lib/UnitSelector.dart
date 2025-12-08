@@ -80,7 +80,7 @@ class _UniteSelectorState extends State<UnitSelector> {
       return ElevatedButton.styleFrom(
         minimumSize: Size.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(radius / 5), // <--add this
+          borderRadius: BorderRadius.circular(radius / 8), // <--add this
         ),
         padding: EdgeInsets.zero,
       );
