@@ -1,5 +1,5 @@
 import 'dart:async';
-
+import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:warroombattlesim/UnitIdentification.dart';
@@ -11,8 +11,14 @@ import 'package:wrdice/wrdice_bindings_generated.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 import 'package:warroombattlesim/AppState.dart';
-
+import "package:intl/intl.dart";
 import 'UnitSelectorOverlay.dart';
+
+class ChartData {
+  ChartData(this.x, this.y);
+  final String x;
+  final double? y;
+}
 
 enum pieKey { Blue, Red, Draw, MutualDestruction }
 
@@ -432,6 +438,16 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
     );
   }
 
+  Color _getSegmentColor(int index) {
+    List<Color> colors = [
+      _blue,
+      _red,
+      const Color.fromARGB(255, 124, 124, 123),
+      Colors.brown,
+    ];
+    return colors[index];
+  }
+
   Widget _buildUnitsPage() {
     Widget lndSeaSelector = Padding(
       padding: const EdgeInsets.all(8),
@@ -479,9 +495,76 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [lndSeaSelector, batchCapSelector],
         ),
+        Builder(
+          builder: (context) {
+            if (statistics != null) {
+              List<ChartData> data = statistics!.pieData.entries
+                  .map((v) => ChartData("Winrate", v.value.$2 / 100))
+                  .toList();
 
+              return Flexible(
+                flex: 10,
+                child: SfCartesianChart(
+                  plotAreaBorderWidth: 0,
+                  primaryXAxis: CategoryAxis(isVisible: false),
+                  primaryYAxis: NumericAxis(
+                    isVisible: false,
+                    numberFormat: NumberFormat.percentPattern(),
+                  ),
+                  series: <CartesianSeries>[
+                    StackedBar100Series<ChartData, String>(
+                      width: 1.0,
+                      spacing: 0,
+                      dataSource: data,
+                      xValueMapper: (ChartData data, _) => data.x,
+                      yValueMapper: (ChartData data, _) => data.y,
+                      pointColorMapper: (ChartData data, int index) =>
+                          _getSegmentColor(index), // Use a helper function
+                      dataLabelSettings: DataLabelSettings(
+                        isVisible: true,
+                        showZeroValue: false,
+                        labelAlignment: ChartDataLabelAlignment.middle,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            } else {
+              return Flexible(
+                flex: 10,
+                child: SfCartesianChart(
+                  primaryXAxis: CategoryAxis(isVisible: false),
+                  primaryYAxis: NumericAxis(
+                    isVisible: false,
+                    numberFormat: NumberFormat.percentPattern(),
+                  ),
+                  series: <CartesianSeries>[
+                    StackedBar100Series<ChartData, String>(
+                      width: 1.0,
+                      spacing: 0,
+                      dataSource: [
+                        ChartData("Winrate", 0.50),
+                        ChartData("Winrate", 0.50),
+                      ],
+                      xValueMapper: (ChartData data, _) => data.x,
+                      yValueMapper: (ChartData data, _) => data.y,
+                      pointColorMapper: (ChartData data, int index) =>
+                          _getSegmentColor(index), // Use a helper function
+                      dataLabelSettings: DataLabelSettings(
+                        isVisible: true,
+                        showZeroValue: false,
+                        labelAlignment: ChartDataLabelAlignment.middle,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            }
+          },
+        ),
         // Switch Land / Sea
         Expanded(
+          flex: 80,
           child: Row(
             children: [
               Flexible(
@@ -668,8 +751,6 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
       case 0:
         return _buildUnitsPage();
       case 1:
-        return _buildPieChart();
-      case 2:
         return _buildBarChart();
       default:
         return const SizedBox();
@@ -691,8 +772,10 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
         currentIndex: _selectedNavIndex,
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.category), label: "Units"),
-          BottomNavigationBarItem(icon: Icon(Icons.pie_chart), label: "Pie"),
-          BottomNavigationBarItem(icon: Icon(Icons.bar_chart), label: "Bar"),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart),
+            label: "Statistics",
+          ),
         ],
         onTap: (i) => setState(() => _selectedNavIndex = i),
       ),

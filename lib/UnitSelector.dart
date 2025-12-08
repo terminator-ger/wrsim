@@ -49,6 +49,16 @@ class UnitSelector extends StatefulWidget {
         .unitIdx];
   }
 
+  int getUnitCountStance0() {
+    return state.stanceDef[unitIdentification.columnIndex][unitIdentification
+        .unitIdx];
+  }
+
+  int getUnitCountStance1() {
+    return state.stanceOff[unitIdentification.columnIndex][unitIdentification
+        .unitIdx];
+  }
+
   double getStanceFraction() {
     return state.stanceFractions[unitIdentification
         .columnIndex][unitIdentification.unitIdx];
@@ -124,19 +134,19 @@ class _UniteSelectorState extends State<UnitSelector> {
       ];
     } else if (widget.unitIdentification.isLand) {
       return [
-        Image.asset("resources/stance_off.png", fit: BoxFit.cover),
         Image.asset("resources/stance_def.png", fit: BoxFit.cover),
+        Image.asset("resources/stance_off.png", fit: BoxFit.cover),
       ];
       // sea
     } else if (widget.unitIdentification.unitIdx == 1) {
       return [
         Image.asset("resources/escort.png", fit: BoxFit.cover),
-        Image.asset("resources/stance_def.png", fit: BoxFit.cover),
+        Image.asset("resources/stance_off.png", fit: BoxFit.cover),
       ];
     } else {
       return [
         Image.asset("resources/stance_air.png", fit: BoxFit.cover),
-        Image.asset("resources/stance_def.png", fit: BoxFit.cover),
+        Image.asset("resources/stance_off.png", fit: BoxFit.cover),
       ];
     }
   }
@@ -245,6 +255,14 @@ class _UniteSelectorState extends State<UnitSelector> {
           Align(
             alignment: AlignmentGeometry.bottomCenter,
             child: Text(widget.getUnitCount().toString()),
+          ),
+          Align(
+            alignment: AlignmentGeometry.topLeft,
+            child: Text(widget.getUnitCountStance0().toString()),
+          ),
+          Align(
+            alignment: AlignmentGeometry.topRight,
+            child: Text(widget.getUnitCountStance1().toString()),
           ),
         ],
       ),
