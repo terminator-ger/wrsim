@@ -1,0 +1,3 @@
+[submodule "wrdice_bindings"]
+	path = wrdice_bindings
+	url = git@github.com:terminator-ger/wrdice_bindings.git
