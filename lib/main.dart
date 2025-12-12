@@ -488,115 +488,117 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
       ),
     );
 
-    return Column(
-      children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [lndSeaSelector, batchCapSelector],
-        ),
-        Builder(
-          builder: (context) {
-            if (statistics != null) {
-              List<ChartData> data = statistics!.pieData.entries
-                  .map((v) => ChartData("Winrate", v.value.$2 / 100))
-                  .toList();
-
-              return Flexible(
-                flex: 10,
-                child: SfCartesianChart(
-                  plotAreaBorderWidth: 0,
-                  primaryXAxis: CategoryAxis(isVisible: false),
-                  primaryYAxis: NumericAxis(
-                    isVisible: false,
-                    numberFormat: NumberFormat.percentPattern(),
-                  ),
-                  series: <CartesianSeries>[
-                    StackedBar100Series<ChartData, String>(
-                      width: 1.0,
-                      spacing: 0,
-                      dataSource: data,
-                      xValueMapper: (ChartData data, _) => data.x,
-                      yValueMapper: (ChartData data, _) => data.y,
-                      pointColorMapper: (ChartData data, int index) =>
-                          _getSegmentColor(index), // Use a helper function
-                      dataLabelSettings: DataLabelSettings(
-                        isVisible: true,
-                        showZeroValue: false,
-                        labelAlignment: ChartDataLabelAlignment.middle,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            } else {
-              return Flexible(
-                flex: 10,
-                child: SfCartesianChart(
-                  primaryXAxis: CategoryAxis(isVisible: false),
-                  primaryYAxis: NumericAxis(
-                    isVisible: false,
-                    numberFormat: NumberFormat.percentPattern(),
-                  ),
-                  series: <CartesianSeries>[
-                    StackedBar100Series<ChartData, String>(
-                      width: 1.0,
-                      spacing: 0,
-                      dataSource: [
-                        ChartData("Winrate", 0.50),
-                        ChartData("Winrate", 0.50),
-                      ],
-                      xValueMapper: (ChartData data, _) => data.x,
-                      yValueMapper: (ChartData data, _) => data.y,
-                      pointColorMapper: (ChartData data, int index) =>
-                          _getSegmentColor(index), // Use a helper function
-                      dataLabelSettings: DataLabelSettings(
-                        isVisible: true,
-                        showZeroValue: false,
-                        labelAlignment: ChartDataLabelAlignment.middle,
-                      ),
-                    ),
-                  ],
-                ),
-              );
-            }
-          },
-        ),
-        // Switch Land / Sea
-        Expanded(
-          flex: 80,
-          child: Row(
-            children: [
-              Flexible(
-                child: Column(
-                  children: [
-                    _diceCard(
-                      _blue,
-                      _getDiceDisplay(appState.diceTotal[0], 0, true),
-                      _getDiceDisplay(appState.diceTotal[0], 1, false),
-                      Text("BlueFor"),
-                    ),
-                    _buildColumnContent(0, _isLand, _blue),
-                  ],
-                ),
-              ),
-              Flexible(
-                child: Column(
-                  children: [
-                    _diceCard(
-                      _red,
-                      _getDiceDisplay(appState.diceTotal[1], 0, true),
-                      _getDiceDisplay(appState.diceTotal[1], 1, false),
-                      Text("RedFor"),
-                    ),
-                    _buildColumnContent(1, _isLand, _red),
-                  ],
-                ),
-              ),
-            ],
+    return Expanded(
+      child: Column(
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [lndSeaSelector, batchCapSelector],
           ),
-        ),
-      ],
+          Builder(
+            builder: (context) {
+              if (statistics != null) {
+                List<ChartData> data = statistics!.pieData.entries
+                    .map((v) => ChartData("Winrate", v.value.$2 / 100))
+                    .toList();
+
+                return Flexible(
+                  flex: 10,
+                  child: SfCartesianChart(
+                    plotAreaBorderWidth: 0,
+                    primaryXAxis: CategoryAxis(isVisible: false),
+                    primaryYAxis: NumericAxis(
+                      isVisible: false,
+                      numberFormat: NumberFormat.percentPattern(),
+                    ),
+                    series: <CartesianSeries>[
+                      StackedBar100Series<ChartData, String>(
+                        width: 1.0,
+                        spacing: 0,
+                        dataSource: data,
+                        xValueMapper: (ChartData data, _) => data.x,
+                        yValueMapper: (ChartData data, _) => data.y,
+                        pointColorMapper: (ChartData data, int index) =>
+                            _getSegmentColor(index), // Use a helper function
+                        dataLabelSettings: DataLabelSettings(
+                          isVisible: true,
+                          showZeroValue: false,
+                          labelAlignment: ChartDataLabelAlignment.middle,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              } else {
+                return Flexible(
+                  flex: 10,
+                  child: SfCartesianChart(
+                    primaryXAxis: CategoryAxis(isVisible: false),
+                    primaryYAxis: NumericAxis(
+                      isVisible: false,
+                      numberFormat: NumberFormat.percentPattern(),
+                    ),
+                    series: <CartesianSeries>[
+                      StackedBar100Series<ChartData, String>(
+                        width: 1.0,
+                        spacing: 0,
+                        dataSource: [
+                          ChartData("Winrate", 0.50),
+                          ChartData("Winrate", 0.50),
+                        ],
+                        xValueMapper: (ChartData data, _) => data.x,
+                        yValueMapper: (ChartData data, _) => data.y,
+                        pointColorMapper: (ChartData data, int index) =>
+                            _getSegmentColor(index), // Use a helper function
+                        dataLabelSettings: DataLabelSettings(
+                          isVisible: true,
+                          showZeroValue: false,
+                          labelAlignment: ChartDataLabelAlignment.middle,
+                        ),
+                      ),
+                    ],
+                  ),
+                );
+              }
+            },
+          ),
+          // Switch Land / Sea
+          Expanded(
+            flex: 80,
+            child: Row(
+              children: [
+                Flexible(
+                  child: Column(
+                    children: [
+                      _diceCard(
+                        _blue,
+                        _getDiceDisplay(appState.diceTotal[0], 0, true),
+                        _getDiceDisplay(appState.diceTotal[0], 1, false),
+                        Text("BlueFor"),
+                      ),
+                      _buildColumnContent(0, _isLand, _blue),
+                    ],
+                  ),
+                ),
+                Flexible(
+                  child: Column(
+                    children: [
+                      _diceCard(
+                        _red,
+                        _getDiceDisplay(appState.diceTotal[1], 0, true),
+                        _getDiceDisplay(appState.diceTotal[1], 1, false),
+                        Text("RedFor"),
+                      ),
+                      _buildColumnContent(1, _isLand, _red),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
     );
   }
 
