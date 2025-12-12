@@ -35,6 +35,9 @@ class WarRoomBattleSimApp extends StatefulWidget {
   State<WarRoomBattleSimApp> createState() => _WarRoomBattleSimAppState();
 }
 
+const Color _colour_air = Color.fromARGB(50, 3, 167, 200);
+const Color _colour_land = Color.fromARGB(50, 255, 174, 99);
+
 const Color _blue = Color.fromARGB(255, 165, 223, 250);
 const Color _red = Color.fromARGB(255, 254, 146, 146);
 const List<Color> unitColors = [
@@ -315,9 +318,7 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
       unitIdentification: unit,
     );
 
-    Color background = isAir
-        ? const Color.fromARGB(50, 3, 167, 200)
-        : const Color.fromARGB(50, 255, 174, 99);
+    Color background = isAir ? _colour_air : _colour_land;
 
     return _diceCard(
       background,
@@ -400,39 +401,35 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
 
   Widget _buildColumnBarPlot(int columnIndex, bool isLand, Color color) {
     List<bool> isAir = [true, false];
-    List<Padding> unitGraphs = [];
+    List<Widget> unitGraphs = [];
     for (bool _air in isAir) {
+      List<int> indexes = [];
       for (int i = 0; i < 5; i++) {
         if (_hasUnitsForPlot(columnIndex, i, isLand, _air)) {
-          unitGraphs.add(_buildUnitBarPlot(columnIndex, i, isLand, _air));
+          indexes.add(i);
         }
       }
+      unitGraphs.add(_buildUnitBarPlot(columnIndex, indexes, isLand, _air));
     }
 
     return Expanded(
-      child: Card(
-        color: color,
-        margin: const EdgeInsets.all(3),
-        elevation: 3,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        child: Padding(
-          padding: const EdgeInsets.all(3),
-          child: ListView(
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Wrap(
-                    alignment: WrapAlignment.center,
-                    spacing: 5,
-                    runSpacing: 3,
-                    children: unitGraphs,
-                  ),
-                ],
-              ),
-            ],
-          ),
+      child: Padding(
+        padding: const EdgeInsets.all(3),
+        child: ListView(
+          children: [
+            Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Wrap(
+                  alignment: WrapAlignment.center,
+                  spacing: 5,
+                  runSpacing: 3,
+                  children: unitGraphs,
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );
@@ -442,7 +439,7 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
     List<Color> colors = [
       _blue,
       _red,
-      const Color.fromARGB(255, 124, 124, 123),
+      const Color.fromARGB(255, 197, 197, 196),
       Colors.black45,
     ];
     return colors[index];
@@ -645,55 +642,74 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
     return barData;
   }
 
-  Padding _buildUnitBarPlot(int columnIndex, int i, bool isLand, bool isAir) {
+  Widget _buildUnitBarPlot(
+    int columnIndex,
+    List<int> indexes,
+    bool isLand,
+    bool isAir,
+  ) {
     late List<wrdice.DartSurvived> barData = _getUnitStats(
       columnIndex,
       isLand,
       isAir,
     );
-    late List<BarChartGroupData> barroddata = [];
-    for (int idx = 0; idx < barData[i].size; idx++) {
-      if (barData[i].count[idx] > 0) {
-        barroddata.add(
-          BarChartGroupData(
-            x: idx,
-            showingTooltipIndicators: [],
-            barRods: [
+    late Map<int, BarChartGroupData> barroddata = {};
+    for (int i in indexes) {
+      for (int idx = 0; idx < barData[i].size; idx++) {
+        if (barData[i].count[idx] > 0) {
+          if (barroddata.containsKey(idx)) {
+            barroddata[idx]!.barRods.add(
               BarChartRodData(toY: barData[i].odds[idx], color: unitColors[i]),
-            ],
-          ),
-        );
+            );
+            // add rod
+          } else {
+            barroddata[idx] = BarChartGroupData(
+              x: idx,
+              showingTooltipIndicators: [],
+              barRods: [
+                BarChartRodData(
+                  toY: barData[i].odds[idx],
+                  color: unitColors[i],
+                ),
+              ],
+            );
+          }
+        }
       }
     }
-    return Padding(
-      padding: const EdgeInsets.all(5),
-      child: SizedBox(
-        height: 250, // Set a fixed height for the chart
-        child: BarChart(
-          BarChartData(
-            maxY: 1.0,
-            gridData: FlGridData(
-              drawHorizontalLine: true,
-              drawVerticalLine: false,
+
+    return SizedBox(
+      height: 250, // Set a fixed height for the chart
+      child: Card(
+        color: isAir ? _colour_air : _colour_land,
+        child: Padding(
+          padding: const EdgeInsets.all(10),
+          child: BarChart(
+            BarChartData(
+              maxY: 1.0,
+              gridData: FlGridData(
+                drawHorizontalLine: true,
+                drawVerticalLine: false,
+              ),
+              borderData: FlBorderData(show: false),
+              barTouchData: BarTouchData(enabled: false),
+              titlesData: FlTitlesData(
+                show: true,
+                rightTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                topTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                bottomTitles: AxisTitles(
+                  sideTitles: SideTitles(showTitles: true, reservedSize: 25),
+                ),
+                leftTitles: const AxisTitles(
+                  sideTitles: SideTitles(showTitles: true, reservedSize: 30),
+                ),
+              ),
+              barGroups: barroddata.values.toList(),
             ),
-            borderData: FlBorderData(show: false),
-            barTouchData: BarTouchData(enabled: false),
-            titlesData: FlTitlesData(
-              show: true,
-              rightTitles: const AxisTitles(
-                sideTitles: SideTitles(showTitles: false),
-              ),
-              topTitles: const AxisTitles(
-                sideTitles: SideTitles(showTitles: false),
-              ),
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(showTitles: true, reservedSize: 25),
-              ),
-              leftTitles: const AxisTitles(
-                sideTitles: SideTitles(showTitles: true, reservedSize: 30),
-              ),
-            ),
-            barGroups: barroddata,
           ),
         ),
       ),
@@ -708,8 +724,32 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
     return Expanded(
       child: Row(
         children: [
-          _buildColumnBarPlot(0, _isLand, _blue),
-          _buildColumnBarPlot(1, _isLand, _red),
+          Expanded(
+            child: Column(
+              children: [
+                _diceCard(
+                  _blue,
+                  _getDiceDisplay(appState.diceTotal[0], 0, true),
+                  _getDiceDisplay(appState.diceTotal[0], 1, false),
+                  Text("BlueFor"),
+                ),
+                _buildColumnBarPlot(0, _isLand, _blue),
+              ],
+            ),
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                _diceCard(
+                  _red,
+                  _getDiceDisplay(appState.diceTotal[1], 0, true),
+                  _getDiceDisplay(appState.diceTotal[1], 1, false),
+                  Text("RedFor"),
+                ),
+                _buildColumnBarPlot(1, _isLand, _red),
+              ],
+            ),
+          ),
         ],
       ),
     );
