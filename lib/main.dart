@@ -443,7 +443,7 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
       _blue,
       _red,
       const Color.fromARGB(255, 124, 124, 123),
-      Colors.brown,
+      Colors.black45,
     ];
     return colors[index];
   }
@@ -603,39 +603,6 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
   Future<void> _calculate() async {
     // Replace with your real FFI call
     _calcBattle(_isLand);
-  }
-
-  Widget _buildPieChart() {
-    if (!asyncResult.isCompleted) {
-      return const Center(child: Text("No data yet. Please calculate."));
-    }
-    Map<pieKey, Color> colors = {
-      pieKey.Blue: _blue,
-      pieKey.Red: _red,
-      pieKey.Draw: Colors.amberAccent,
-      pieKey.MutualDestruction: Colors.brown,
-    };
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: PieChart(
-        PieChartData(
-          sections: statistics!.pieData.entries
-              .map(
-                (e) => PieChartSectionData(
-                  value: e.value.$2,
-                  title: "${e.value.$1}\n${e.value.$2.toStringAsFixed(2)}%",
-                  radius: 80,
-                  color: colors[e.key],
-                  titleStyle: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              )
-              .toList(),
-        ),
-      ),
-    );
   }
 
   bool _hasUnitsForPlot(int columnIndex, int idx, bool isLand, bool isAir) {

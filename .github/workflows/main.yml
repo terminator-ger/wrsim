@@ -1,4 +1,4 @@
-name: 🛠 Android CI / Build & Release APK
+name: Build & Release 
 
 on:
   push:
@@ -15,18 +15,39 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  CC: gcc
+  CXX: g++
+
 jobs:
   build_android:
     runs-on: ubuntu-latest
-    steps:
+    steps: 
       - name: Clone repository
         uses: actions/checkout@v4
+      - name: Submodule Init
+        uses: snickerbockers/submodules-init@v4
+      
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Setup Android build-tools
+        run: |
+          $ANDROID_HOME/cmdline-tools/16.0/bin/sdkmanager "build-tools;34.0.0"
+          echo "$ANDROID_HOME/build-tools/34.0.0" >> "$GITHUB_PATH"
+
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
             flutter-version: 3.24.0
+      - run: flutter upgrade
       - run: flutter pub get
-      - run: flutter test
       - run: flutter build apk
       - run: flutter build appbundle
       - name: Prepare artifacts
@@ -44,55 +65,65 @@ jobs:
           artifacts: artifacts/*.apk
           token:     ${{ secrets.GITHUB_TOKEN }}
 
-  build_windows:
-    runs-on: windows-latest
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v4
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-      - run: flutter build windows
-      - name: Prepare artifacts
-        run: |
-          mkdir -p artifacts
-          cp build/linux/x86/release/bundle/ artifacts/
+  #build_windows:
+  #  runs-on: windows-latest
+  #  steps:
+  #    - name: Clone repository
+  #      uses: actions/checkout@v4
+  #    - name: Submodule Init
+  #      uses: snickerbockers/submodules-init@v4
+ 
+  #    - name: Set up Flutter
+  #      uses: subosito/flutter-action@v2
+  #      with:
+  #        channel: stable
+  #    - run: flutter build windows
+  #    - name: Prepare artifacts
+  #      run: |
+  #        mkdir -p artifacts
+  #        cp build/linux/x86/release/bundle/ artifacts/
 
-      # ─────────────── ONLY ON TAGS ───────────────
-      - name: Create or update Release
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: ncipollo/release-action@v1.16.0
-        with:
-          tag:       ${{ github.ref_name }}
-          name:      Release ${{ github.ref_name }}
-          artifacts: artifacts/*
-          token:     ${{ secrets.GITHUB_TOKEN }}
+  #    # ─────────────── ONLY ON TAGS ───────────────
+  #    - name: Create or update Release
+  #      if: startsWith(github.ref, 'refs/tags/v')
+  #      uses: ncipollo/release-action@v1.16.0
+  #      with:
+  #        tag:       ${{ github.ref_name }}
+  #        name:      Release ${{ github.ref_name }}
+  #        artifacts: artifacts/*
+  #        token:     ${{ secrets.GITHUB_TOKEN }}
 
-  build_linux:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v4
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-      - run: |
-          sudo apt-get update -y
-          sudo apt-get install -y ninja-build libgtk-3-dev
-      - run: flutter build linux
-      - name: Prepare artifacts
-        run: |
-          mkdir -p artifacts
-          cp build/app/outputs/flutter-apk/*.apk artifacts/
-
-      # ─────────────── ONLY ON TAGS ───────────────
-      - name: Create or update Release
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: ncipollo/release-action@v1.16.0
-        with:
-          tag:       ${{ github.ref_name }}
-          name:      Release ${{ github.ref_name }}
-          artifacts: artifacts/*.apk
-          token:     ${{ secrets.GITHUB_TOKEN }}
+#  build_linux:
+#    runs-on: ubuntu-latest
+#    steps:
+#      - name: Clone repository
+#        uses: actions/checkout@v4
+#      - name: Submodule Init
+#        uses: snickerbockers/submodules-init@v4
+#      - name: Set up Flutter
+#        uses: subosito/flutter-action@v2
+#        with:
+#          channel: stable
+#      - name: set env
+#        run: echo "CMAKE_CXX_COMPILER=/usr/bin/g++" >> $GITHUB_ENV
+#      - run: |
+#          sudo apt-get update -y
+#          sudo apt install -y clang cmake ninja-build libgtk-3-dev
+#      - name: Doctor
+#        run: flutter doctor
+#      - name: Build
+#        run: flutter build linux
+#      - name: Prepare artifacts
+#        run: |
+#          mkdir -p artifacts
+#          cp -r build/linux/x64/release/bundle/* artifacts/
+#
+#      # ─────────────── ONLY ON TAGS ───────────────
+#      - name: Create or update Release
+#        if: startsWith(github.ref, 'refs/tags/v')
+#        uses: ncipollo/release-action@v1.16.0
+#        with:
+#          tag:       ${{ github.ref_name }}
+#          name:      Release ${{ github.ref_name }}
+#          artifacts: artifacts/*
+#          token:     ${{ secrets.GITHUB_TOKEN }}
