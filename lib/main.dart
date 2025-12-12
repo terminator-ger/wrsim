@@ -384,6 +384,7 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
           //    padding: const EdgeInsets.all(10),
           //    child:
           ListView(
+            padding: EdgeInsets.only(bottom: 100),
             //shrinkWrap: true,
             scrollDirection: Axis.vertical,
             children: [

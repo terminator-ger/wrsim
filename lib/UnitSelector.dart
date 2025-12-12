@@ -253,15 +253,15 @@ class _UniteSelectorState extends State<UnitSelector> {
             ),
           ),
           Align(
-            alignment: AlignmentGeometry.bottomCenter,
+            alignment: AlignmentGeometry.topCenter,
             child: Text(widget.getUnitCount().toString()),
           ),
           Align(
-            alignment: AlignmentGeometry.topLeft,
+            alignment: AlignmentGeometry.bottomLeft,
             child: Text(widget.getUnitCountStance0().toString()),
           ),
           Align(
-            alignment: AlignmentGeometry.topRight,
+            alignment: AlignmentGeometry.bottomRight,
             child: Text(widget.getUnitCountStance1().toString()),
           ),
         ],
