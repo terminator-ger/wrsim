@@ -65,35 +65,37 @@ jobs:
           name:      Release ${{ github.ref_name }}
           artifacts: artifacts/*.apk
           token:     ${{ secrets.GITHUB_TOKEN }}
+          bodyFile: "body.md"
+          allowUpdates: true
 
-  build_windows:
-    runs-on: windows-latest
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v4
+  #build_windows:
+  #  runs-on: windows-latest
+  #  steps:
+  #    - name: Clone repository
+  #      uses: actions/checkout@v4
 
-      - name: Submodule Init
-        uses: snickerbockers/submodules-init@v4
+  #    - name: Submodule Init
+  #      uses: snickerbockers/submodules-init@v4
  
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: stable
-      - run: flutter build windows
-      - name: Prepare artifacts
-        run: |
-          mkdir -p artifacts
-          cp build/linux/x86/release/bundle/ artifacts/
+  #    - name: Set up Flutter
+  #      uses: subosito/flutter-action@v2
+  #      with:
+  #        channel: stable
+  #    - run: flutter build windows
+  #    - name: Prepare artifacts
+  #      run: |
+  #        mkdir -p artifacts
+  #        cp build/linux/x86/release/bundle/ artifacts/
 
-      # ─────────────── ONLY ON TAGS ───────────────
-      - name: Create or update Release
-        if: startsWith(github.ref, 'refs/tags/v')
-        uses: ncipollo/release-action@v1.16.0
-        with:
-          tag:       ${{ github.ref_name }}
-          name:      Release ${{ github.ref_name }}
-          artifacts: artifacts/*
-          token:     ${{ secrets.GITHUB_TOKEN }}
+  #    # ─────────────── ONLY ON TAGS ───────────────
+  #    - name: Create or update Release
+  #      if: startsWith(github.ref, 'refs/tags/v')
+  #      uses: ncipollo/release-action@v1.16.0
+  #      with:
+  #        tag:       ${{ github.ref_name }}
+  #        name:      Release ${{ github.ref_name }}
+  #        artifacts: artifacts/*
+  #        token:     ${{ secrets.GITHUB_TOKEN }}
 
   build_linux:
     runs-on: ubuntu-latest
@@ -129,5 +131,7 @@ jobs:
         with:
           tag:       ${{ github.ref_name }}
           name:      Release ${{ github.ref_name }}
-          artifacts: artifacts/*
+          artifacts: "artifacts/*"
           token:     ${{ secrets.GITHUB_TOKEN }}
+          bodyFile: "body.md"
+          allowUpdates: true
