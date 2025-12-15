@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -37,7 +38,6 @@ class WarRoomBattleSimApp extends StatefulWidget {
 
 const Color _colour_air = Color.fromARGB(50, 3, 167, 200);
 const Color _colour_land = Color.fromARGB(50, 255, 174, 99);
-
 const Color _blue = Color.fromARGB(255, 165, 223, 250);
 const Color _red = Color.fromARGB(255, 254, 146, 146);
 const List<Color> unitColors = [
@@ -89,9 +89,87 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
     };
   }
 
+  Null Function() decreaseUnitCount(UnitIdentification x) {
+    return () {
+      UnitState state = getUnitState(x.isAir, x.isLand);
+      int count = min(
+        max(state.unitCount[x.columnIndex][x.unitIdx] - 1, 0),
+        30,
+      );
+      setState(() {
+        state.unitCount[x.columnIndex][x.unitIdx] = count;
+      });
+      _updateStance(
+        x.columnIndex,
+        state.stanceFractions[x.columnIndex][x.unitIdx],
+        x.unitIdx,
+        x.isLand,
+        x.isAir,
+      );
+    };
+  }
+
+  Null Function() increaseUnitCount(UnitIdentification x) {
+    return () {
+      UnitState state = getUnitState(x.isAir, x.isLand);
+      int count = min(
+        max(state.unitCount[x.columnIndex][x.unitIdx] + 1, 0),
+        30,
+      );
+      setState(() {
+        state.unitCount[x.columnIndex][x.unitIdx] = count;
+      });
+      _updateStance(
+        x.columnIndex,
+        state.stanceFractions[x.columnIndex][x.unitIdx],
+        x.unitIdx,
+        x.isLand,
+        x.isAir,
+      );
+    };
+  }
+
   Null Function(double val) updateStance(UnitIdentification x) {
     return (double val) {
       _updateStance(x.columnIndex, val, x.unitIdx, x.isLand, x.isAir);
+    };
+  }
+
+  Null Function() decreaseStanceFraction(UnitIdentification x) {
+    return () {
+      UnitState unitstate = getUnitState(x.isAir, x.isLand);
+      double frac = 1 / unitstate.unitCount[x.columnIndex][x.unitIdx];
+      double val = unitstate.stanceFractions[x.columnIndex][x.unitIdx];
+      val = max(min(val - frac, 1), 0);
+      setState(() {
+        unitstate.stanceFractions[x.columnIndex][x.unitIdx] = val;
+      });
+      unitstate.stanceDef[x.columnIndex][x.unitIdx] =
+          ((1 - val) * unitstate.unitCount[x.columnIndex][x.unitIdx]).round();
+      unitstate.stanceOff[x.columnIndex][x.unitIdx] =
+          ((val) * unitstate.unitCount[x.columnIndex][x.unitIdx]).round();
+
+      //update dice
+      updateDice(x.columnIndex);
+    };
+  }
+
+  Null Function() increaseStanceFraction(UnitIdentification x) {
+    return () {
+      UnitState unitstate = getUnitState(x.isAir, x.isLand);
+      double frac = 1 / unitstate.unitCount[x.columnIndex][x.unitIdx];
+      double val = unitstate.stanceFractions[x.columnIndex][x.unitIdx];
+      val = max(min(val + frac, 1), 0);
+      setState(() {
+        unitstate.stanceFractions[x.columnIndex][x.unitIdx] = val;
+      });
+      unitstate.stanceDef[x.columnIndex][x.unitIdx] =
+          ((1 - val) * unitstate.unitCount[x.columnIndex][x.unitIdx]).round();
+      unitstate.stanceOff[x.columnIndex][x.unitIdx] =
+          ((val) * unitstate.unitCount[x.columnIndex][x.unitIdx]).round();
+
+      //update dice
+      updateDice(x.columnIndex);
     };
   }
 
@@ -237,8 +315,6 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
     }),
   ];
 
-  final int offset_air = 2;
-
   void _updateStance(
     int columnIndex,
     double value,
@@ -246,33 +322,15 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
     bool isLand,
     bool isAir,
   ) {
-    if (isAir) {
-      setState(() {
-        appState.air.stanceFractions[columnIndex][idx] = value;
-      });
-      appState.air.stanceDef[columnIndex][idx] =
-          ((1 - value) * appState.air.unitCount[columnIndex][idx]).round();
-      appState.air.stanceOff[columnIndex][idx] =
-          (value * appState.air.unitCount[columnIndex][idx]).round();
-    } else {
-      if (isLand) {
-        setState(() {
-          appState.land.stanceFractions[columnIndex][idx] = value;
-        });
-        appState.land.stanceDef[columnIndex][idx] =
-            ((1 - value) * appState.land.unitCount[columnIndex][idx]).round();
-        appState.land.stanceOff[columnIndex][idx] =
-            (value * appState.land.unitCount[columnIndex][idx]).round();
-      } else {
-        setState(() {
-          appState.sea.stanceFractions[columnIndex][idx] = value;
-        });
-        appState.sea.stanceDef[columnIndex][idx] =
-            ((1 - value) * appState.sea.unitCount[columnIndex][idx]).round();
-        appState.sea.stanceOff[columnIndex][idx] =
-            (value * appState.sea.unitCount[columnIndex][idx]).round();
-      }
-    }
+    UnitState unitstate = getUnitState(isAir, isLand);
+    setState(() {
+      unitstate.stanceFractions[columnIndex][idx] = value;
+    });
+    unitstate.stanceDef[columnIndex][idx] =
+        ((1 - value) * unitstate.unitCount[columnIndex][idx]).round();
+    unitstate.stanceOff[columnIndex][idx] =
+        (value * unitstate.unitCount[columnIndex][idx]).round();
+
     //update dice
     updateDice(columnIndex);
   }
@@ -314,7 +372,11 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
     Widget centerItem = UnitSelector(
       state: state,
       onUnitCountChanged: updateUnitCount(unit),
+      onUnitCountDecreased: decreaseUnitCount(unit),
+      onUnitCountIncreased: increaseUnitCount(unit),
       onStanceFractionChanged: updateStance(unit),
+      onStanceFractionDecreased: decreaseStanceFraction(unit),
+      onStanceFractionIncreased: increaseStanceFraction(unit),
       unitIdentification: unit,
     );
 
@@ -369,7 +431,7 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
 
   Widget _buildColumnContent(int columnIndex, bool isLand, Color color) {
     List<Widget> units_air = List.generate(2, (i) {
-      return _buildUnitSelection(columnIndex, i + offset_air, isLand, true);
+      return _buildUnitSelection(columnIndex, i + 2, isLand, true);
     });
     List<Widget> units_ground = List.generate(isLand ? 3 : 4, (i) {
       return _buildUnitSelection(columnIndex, i, isLand, false);

@@ -1,3 +1,5 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:warroombattlesim/UnitIdentification.dart';
 import 'package:warroombattlesim/UnitSelectorOverlay.dart';
@@ -10,33 +12,41 @@ class UnitSelector extends StatefulWidget {
     required this.state,
     required this.onUnitCountChanged,
     required this.unitIdentification,
+    required this.onUnitCountIncreased,
+    required this.onUnitCountDecreased,
     required this.onStanceFractionChanged,
+    required this.onStanceFractionIncreased,
+    required this.onStanceFractionDecreased,
   });
   UnitIdentification unitIdentification;
   UnitState state;
   ValueChanged<int> onUnitCountChanged;
   ValueChanged<double> onStanceFractionChanged;
+  VoidCallback onUnitCountDecreased;
+  VoidCallback onUnitCountIncreased;
+  VoidCallback onStanceFractionDecreased;
+  VoidCallback onStanceFractionIncreased;
 
   final Map<String, List<Image>> icons = {
     "air": [
       Image.asset("resources/air.png"),
       Image.asset("resources/air.png"),
       Image.asset("resources/green_air.jpg"),
-      Image.asset("resources/red_air.jpg", fit: BoxFit.cover),
-      Image.asset("resources/air.png", fit: BoxFit.cover),
+      Image.asset("resources/red_air.jpg", fit: BoxFit.contain),
+      Image.asset("resources/air.png", fit: BoxFit.contain),
     ],
     "lnd": [
-      Image.asset("resources/yellow_ground.jpg", fit: BoxFit.cover),
-      Image.asset("resources/blue_ground.jpg", fit: BoxFit.cover),
-      Image.asset("resources/green_ground.jpg", fit: BoxFit.cover),
+      Image.asset("resources/yellow_ground.jpg", fit: BoxFit.contain),
+      Image.asset("resources/blue_ground.jpg", fit: BoxFit.contain),
+      Image.asset("resources/green_ground.jpg", fit: BoxFit.contain),
       Image.asset("resources/land.png"),
       Image.asset("resources/land.png"),
     ],
     "sea": [
-      Image.asset("resources/yellow_sea.jpg", fit: BoxFit.cover),
-      Image.asset("resources/blue_sea.jpg", fit: BoxFit.cover),
-      Image.asset("resources/green_sea.jpg", fit: BoxFit.cover),
-      Image.asset("resources/red_sea.jpg", fit: BoxFit.cover),
+      Image.asset("resources/yellow_sea.jpg", fit: BoxFit.contain),
+      Image.asset("resources/blue_sea.jpg", fit: BoxFit.contain),
+      Image.asset("resources/green_sea.jpg", fit: BoxFit.contain),
+      Image.asset("resources/red_sea.jpg", fit: BoxFit.contain),
       Image.asset("resources/land.png"),
     ],
   };
@@ -116,37 +126,37 @@ class _UniteSelectorState extends State<UnitSelector> {
     if (widget.unitIdentification.isAir &&
         widget.unitIdentification.unitIdx == 3) {
       return [
-        Image.asset("resources/stance_air.png", fit: BoxFit.cover),
-        Image.asset("resources/bomb.png", fit: BoxFit.cover),
+        Image.asset("resources/stance_air.png", fit: BoxFit.contain),
+        Image.asset("resources/bomb.png", fit: BoxFit.contain),
       ];
     } else if (widget.unitIdentification.isAir &&
         widget.unitIdentification.unitIdx == 2) {
       return [
-        Image.asset("resources/stance_air.png", fit: BoxFit.cover),
-        Image.asset("resources/stance_ground.png", fit: BoxFit.cover),
+        Image.asset("resources/stance_air.png", fit: BoxFit.contain),
+        Image.asset("resources/stance_ground.png", fit: BoxFit.contain),
       ];
       // land
     } else if (widget.unitIdentification.isLand &&
         widget.unitIdentification.unitIdx == 1) {
       return [
-        Image.asset("resources/stance_air.png", fit: BoxFit.cover),
-        Image.asset("resources/stance_ground.png", fit: BoxFit.cover),
+        Image.asset("resources/stance_air.png", fit: BoxFit.contain),
+        Image.asset("resources/stance_ground.png", fit: BoxFit.contain),
       ];
     } else if (widget.unitIdentification.isLand) {
       return [
-        Image.asset("resources/stance_def.png", fit: BoxFit.cover),
-        Image.asset("resources/stance_off.png", fit: BoxFit.cover),
+        Image.asset("resources/stance_def.png", fit: BoxFit.contain),
+        Image.asset("resources/stance_off.png", fit: BoxFit.contain),
       ];
       // sea
     } else if (widget.unitIdentification.unitIdx == 1) {
       return [
-        Image.asset("resources/escort.png", fit: BoxFit.cover),
-        Image.asset("resources/stance_off.png", fit: BoxFit.cover),
+        Image.asset("resources/escort.png", fit: BoxFit.contain),
+        Image.asset("resources/stance_off.png", fit: BoxFit.contain),
       ];
     } else {
       return [
-        Image.asset("resources/stance_air.png", fit: BoxFit.cover),
-        Image.asset("resources/stance_off.png", fit: BoxFit.cover),
+        Image.asset("resources/stance_air.png", fit: BoxFit.contain),
+        Image.asset("resources/stance_off.png", fit: BoxFit.contain),
       ];
     }
   }
@@ -166,9 +176,14 @@ class _UniteSelectorState extends State<UnitSelector> {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisSize: MainAxisSize.max,
             children: [
-              SizedBox(
-                width: 300,
-                height: 100,
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                //SizedBox(
+                //width: 250,
+                //height: 150,
                 child: Visibility(
                   visible: widget.getUnitCount() > 0,
                   child: Visibility(
@@ -180,7 +195,7 @@ class _UniteSelectorState extends State<UnitSelector> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Flexible(child: icons[0]),
+                        //Flexible(child: icons[0]),
                         UnitSelectorOverlay(
                           value: widget.getStanceFraction(),
                           min: 0.0,
@@ -192,17 +207,29 @@ class _UniteSelectorState extends State<UnitSelector> {
                           onChanged: (double val) {
                             widget.onStanceFractionChanged(val);
                           },
+                          onIncr: () {
+                            widget.onStanceFractionIncreased();
+                          },
+                          onDecr: () {
+                            widget.onStanceFractionDecreased();
+                          },
+
                           bowTopIsTop: true,
                         ),
-                        Flexible(child: icons[1]),
+                        //Flexible(child: icons[1]),
                       ],
                     ),
                   ),
                 ),
               ),
-              SizedBox(
-                width: 300,
-                height: 100,
+              //SizedBox(
+              Positioned(
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0,
+                //width: 250,
+                //height: 150,
                 child: UnitSelectorOverlay(
                   value: widget.getUnitCount().toDouble(),
                   onToggled: (void none) {
@@ -212,6 +239,8 @@ class _UniteSelectorState extends State<UnitSelector> {
                   onChanged: (double val) {
                     widget.onUnitCountChanged(val.toInt());
                   },
+                  onDecr: widget.onUnitCountDecreased,
+                  onIncr: widget.onUnitCountIncreased,
                   bowTopIsTop: false,
                 ),
               ),
@@ -224,11 +253,27 @@ class _UniteSelectorState extends State<UnitSelector> {
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: Stack(
+    List<Image> icons = getStanceIcons();
+    return Expanded(
+      flex: 1,
+      child: Column(
         children: [
-          Align(
-            alignment: AlignmentGeometry.center,
+          Flexible(
+            flex: 1,
+            child: Text(
+              widget.getUnitCount().toString(),
+              style: TextStyle(
+                background: Paint()
+                  ..color = Colors.white24
+                  ..strokeWidth = 20
+                  ..strokeJoin = StrokeJoin.round
+                  ..strokeCap = StrokeCap.round
+                  ..style = PaintingStyle.stroke,
+              ),
+            ),
+          ),
+          Flexible(
+            flex: 2,
             child: CompositedTransformTarget(
               link: _link,
               child: LayoutBuilder(
@@ -252,17 +297,39 @@ class _UniteSelectorState extends State<UnitSelector> {
               ),
             ),
           ),
-          Align(
-            alignment: AlignmentGeometry.topCenter,
-            child: Text(widget.getUnitCount().toString()),
-          ),
-          Align(
-            alignment: AlignmentGeometry.bottomLeft,
-            child: Text(widget.getUnitCountStance0().toString()),
-          ),
-          Align(
-            alignment: AlignmentGeometry.bottomRight,
-            child: Text(widget.getUnitCountStance1().toString()),
+          Expanded(
+            flex: 1,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Align(
+                  alignment: AlignmentGeometry.centerLeft,
+                  child: Expanded(
+                    flex: 1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        icons[0],
+                        Text(widget.getUnitCountStance0().toString()),
+                      ],
+                    ),
+                  ),
+                ),
+                Align(
+                  alignment: AlignmentGeometry.centerRight,
+                  child: Expanded(
+                    flex: 1,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        icons[1],
+                        Text(widget.getUnitCountStance1().toString()),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ],
       ),

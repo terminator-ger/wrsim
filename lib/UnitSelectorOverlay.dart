@@ -5,6 +5,8 @@ import 'package:warroombattlesim/UnitState.dart';
 class UnitSelectorOverlay extends StatefulWidget {
   final double value;
   final ValueChanged<double> onChanged;
+  final VoidCallback onIncr;
+  final VoidCallback onDecr;
   final Function(void) onToggled;
   final double min;
   final double max;
@@ -18,6 +20,8 @@ class UnitSelectorOverlay extends StatefulWidget {
     this.bowTopIsTop = true,
     required this.onToggled,
     required this.onChanged,
+    required this.onDecr,
+    required this.onIncr,
   });
 
   @override
@@ -28,36 +32,59 @@ class _UnitselectoroverlayState extends State<UnitSelectorOverlay> {
   @override
   Widget build(BuildContext context) {
     return Flexible(
-      child: SfRadialGauge(
-        axes: <RadialAxis>[
-          RadialAxis(
-            startAngle: widget.bowTopIsTop ? 180 : 0,
-            endAngle: widget.bowTopIsTop ? 360 : 180,
-            isInversed: !widget.bowTopIsTop,
-            minimum: widget.min,
-            maximum: widget.max,
-            showLabels: false,
-            showTicks: true,
-            canScaleToFit: true,
-            pointers: <GaugePointer>[
-              MarkerPointer(
-                value: widget.value,
-                enableDragging: true,
-                markerHeight: 25,
-                markerWidth: 25,
-                markerType: MarkerType.circle,
-                color: Colors.lightBlue,
-                borderWidth: 3,
-                borderColor: Colors.black,
-                onValueChanged: (v) {
-                  widget.onChanged.call(v);
-                },
-              ),
-            ],
-            axisLineStyle: AxisLineStyle(
-              cornerStyle: CornerStyle.bothCurve,
-              color: Colors.white70,
-              thickness: 20,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Flexible(
+            flex: 1,
+            child: ElevatedButton(
+              onPressed: widget.onDecr,
+              child: Icon(Icons.remove),
+            ),
+          ),
+          Flexible(
+            flex: 4,
+            child: SfRadialGauge(
+              axes: <RadialAxis>[
+                RadialAxis(
+                  startAngle: widget.bowTopIsTop ? 180 : 0,
+                  endAngle: widget.bowTopIsTop ? 360 : 180,
+                  isInversed: !widget.bowTopIsTop,
+                  minimum: widget.min,
+                  maximum: widget.max,
+                  showLabels: false,
+                  showTicks: false,
+                  canScaleToFit: true,
+                  pointers: <GaugePointer>[
+                    MarkerPointer(
+                      value: widget.value,
+                      enableDragging: true,
+                      markerHeight: 25,
+                      markerWidth: 25,
+                      markerType: MarkerType.circle,
+                      color: Colors.lightBlue,
+                      borderWidth: 3,
+                      borderColor: Colors.black,
+                      onValueChanged: (v) {
+                        widget.onChanged.call(v);
+                      },
+                    ),
+                  ],
+                  axisLineStyle: AxisLineStyle(
+                    cornerStyle: CornerStyle.bothCurve,
+                    color: Colors.white70,
+                    thickness: 20,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          Flexible(
+            flex: 1,
+            child: ElevatedButton(
+              onPressed: widget.onIncr,
+              child: Icon(Icons.add),
             ),
           ),
         ],
