@@ -66,69 +66,68 @@ jobs:
           artifacts: artifacts/*.apk
           token:     ${{ secrets.GITHUB_TOKEN }}
 
-  #build_windows:
-  #  runs-on: windows-latest
-  #  steps:
-  #    - name: Clone repository
-  #      uses: actions/checkout@v4
-  #    - name: Submodule Init
-  #      uses: snickerbockers/submodules-init@v4
+  build_windows:
+    runs-on: windows-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Submodule Init
+        uses: snickerbockers/submodules-init@v4
  
-  #    - name: Set up Flutter
-  #      uses: subosito/flutter-action@v2
-  #      with:
-  #        channel: stable
-  #    - run: flutter build windows
-  #    - name: Prepare artifacts
-  #      run: |
-  #        mkdir -p artifacts
-  #        cp build/linux/x86/release/bundle/ artifacts/
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - run: flutter build windows
+      - name: Prepare artifacts
+        run: |
+          mkdir -p artifacts
+          cp build/linux/x86/release/bundle/ artifacts/
 
-  #    # ─────────────── ONLY ON TAGS ───────────────
-  #    - name: Create or update Release
-  #      if: startsWith(github.ref, 'refs/tags/v')
-  #      uses: ncipollo/release-action@v1.16.0
-  #      with:
-  #        tag:       ${{ github.ref_name }}
-  #        name:      Release ${{ github.ref_name }}
-  #        artifacts: artifacts/*
-  #        token:     ${{ secrets.GITHUB_TOKEN }}
+      # ─────────────── ONLY ON TAGS ───────────────
+      - name: Create or update Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: ncipollo/release-action@v1.16.0
+        with:
+          tag:       ${{ github.ref_name }}
+          name:      Release ${{ github.ref_name }}
+          artifacts: artifacts/*
+          token:     ${{ secrets.GITHUB_TOKEN }}
 
-#  build_linux:
-#    runs-on: ubuntu-latest
-#    steps:
-#      - name: Clone repository
-#        uses: actions/checkout@v4
-#      - name: Submodule Init
-#        uses: snickerbockers/submodules-init@v4
-#      - name: Reconfigure git to use HTTP authentication
-#        run: >
-#          git config --global url."https://github.com/".insteadOf
-#          ssh://git@github.com/
-#      - name: Set up Flutter
-#        uses: subosito/flutter-action@v2
-#        with:
-#          channel: stable
-#      - name: set env
-#        run: echo "CMAKE_CXX_COMPILER=/usr/bin/g++" >> $GITHUB_ENV
-#      - run: |
-#          sudo apt-get update -y
-#          sudo apt install -y clang cmake ninja-build libgtk-3-dev
-#      - name: Doctor
-#        run: flutter doctor
-#      - name: Build
-#        run: flutter build linux
-#      - name: Prepare artifacts
-#        run: |
-#          mkdir -p artifacts
-#          cp -r build/linux/x64/release/bundle/* artifacts/
-#
-#      # ─────────────── ONLY ON TAGS ───────────────
-#      - name: Create or update Release
-#        if: startsWith(github.ref, 'refs/tags/v')
-#        uses: ncipollo/release-action@v1.16.0
-#        with:
-#          tag:       ${{ github.ref_name }}
-#          name:      Release ${{ github.ref_name }}
-#          artifacts: artifacts/*
-#          token:     ${{ secrets.GITHUB_TOKEN }}
+  build_linux:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Submodule Init
+        uses: snickerbockers/submodules-init@v4
+   
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+      - name: set env
+        run: echo "CMAKE_CXX_COMPILER=/usr/bin/g++" >> $GITHUB_ENV
+      - run: |
+          sudo apt-get update -y
+          sudo apt install -y clang cmake ninja-build libgtk-3-dev
+      - name: Doctor
+        run: flutter doctor
+      - name: Build
+        run: flutter build linux
+      - name: Prepare artifacts
+        run: |
+          mkdir -p artifacts
+          cp -r build/linux/x64/release/bundle/* artifacts/
+
+      # ─────────────── ONLY ON TAGS ───────────────
+      - name: Create or update Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: ncipollo/release-action@v1.16.0
+        with:
+          tag:       ${{ github.ref_name }}
+          name:      Release ${{ github.ref_name }}
+          artifacts: artifacts/*
+          token:     ${{ secrets.GITHUB_TOKEN }}
