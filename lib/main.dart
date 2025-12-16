@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'package:warroombattlesim/DiceCard.dart';
 import 'package:warroombattlesim/UnitIdentification.dart';
 import 'package:warroombattlesim/UnitState.dart';
 import 'package:warroombattlesim/UnitSelector.dart';
@@ -212,24 +213,13 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
     for (final (columnIdx, dice) in dice_list.indexed) {
       setState(() {
         appState.air.diceVsAir[columnIndex] = dice.air.vs_air.toList();
-      });
-      setState(() {
         appState.air.diceVsGround[columnIdx] = dice.air.vs_gnd.toList();
-      });
-      setState(() {
         appState.land.diceVsAir[columnIdx] = dice.lnd.vs_air.toList();
-      });
-      setState(() {
         appState.land.diceVsGround[columnIdx] = dice.lnd.vs_gnd.toList();
-      });
-      setState(() {
         appState.sea.diceVsAir[columnIdx] = dice.sea.vs_air.toList();
-      });
-      setState(() {
         appState.sea.diceVsGround[columnIdx] = dice.sea.vs_gnd.toList();
-      });
-      setState(() {
-        appState.diceTotal[columnIdx] = dice.total.toList();
+        appState.diceTotal.diceVsAir[columnIdx][0] = dice.total.toList()[0];
+        appState.diceTotal.diceVsGround[columnIdx][0] = dice.total.toList()[1];
       });
     }
   }
@@ -369,31 +359,22 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
       unitIdx: i,
     );
 
-    Widget centerItem = UnitSelector(
+    Color background = isAir ? _colour_air : _colour_land;
+    return DiceCard(
+      hasUnitIcon: true,
+      hasOverlay: true,
+      background: background,
+      diceLeft: _getDiceDisplay(state.diceVsAir[columnIndex], i, true),
+      diceRight: _getDiceDisplay(state.diceVsGround[columnIndex], i, false),
       state: state,
+      unitIdentification: unit,
       onUnitCountChanged: updateUnitCount(unit),
       onUnitCountDecreased: decreaseUnitCount(unit),
       onUnitCountIncreased: increaseUnitCount(unit),
       onStanceFractionChanged: updateStance(unit),
       onStanceFractionDecreased: decreaseStanceFraction(unit),
       onStanceFractionIncreased: increaseStanceFraction(unit),
-      unitIdentification: unit,
     );
-
-    Color background = isAir ? _colour_air : _colour_land;
-
-    return _diceCard(
-      background,
-      _getDiceDisplay(state.diceVsAir[columnIndex], i, true),
-      _getDiceDisplay(state.diceVsGround[columnIndex], i, false),
-      centerItem,
-    );
-
-    @override
-    Widget build(BuildContext context) {
-      // TODO: implement build
-      throw UnimplementedError();
-    }
   }
 
   Widget _diceCard(
@@ -437,29 +418,18 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
       return _buildUnitSelection(columnIndex, i, isLand, false);
     });
     return Expanded(
-      child:
-          //Card(
-          //  color: color,
-          //  margin: const EdgeInsets.all(8),
-          //  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          //  child: Padding(
-          //    padding: const EdgeInsets.all(10),
-          //    child:
-          ListView(
-            padding: EdgeInsets.only(bottom: 100),
-            //shrinkWrap: true,
-            scrollDirection: Axis.vertical,
-            children: [
-              Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [units_air, units_ground].expand((x) => x).toList(),
-              ),
-            ],
+      child: ListView(
+        padding: EdgeInsets.only(bottom: 100),
+        scrollDirection: Axis.vertical,
+        children: [
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [units_air, units_ground].expand((x) => x).toList(),
           ),
+        ],
+      ),
     );
-    //  ),
-    //);
   }
 
   Widget _buildColumnBarPlot(int columnIndex, bool isLand, Color color) {
@@ -548,117 +518,123 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
       ),
     );
 
-    return Expanded(
-      child: Column(
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [lndSeaSelector, batchCapSelector],
-          ),
-          Builder(
-            builder: (context) {
-              if (statistics != null) {
-                List<ChartData> data = statistics!.pieData.entries
-                    .map((v) => ChartData("Winrate", v.value.$2 / 100))
-                    .toList();
+    return Column(
+      children: [
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [lndSeaSelector, batchCapSelector],
+        ),
+        Builder(
+          builder: (context) {
+            if (statistics != null) {
+              List<ChartData> data = statistics!.pieData.entries
+                  .map((v) => ChartData("Winrate", v.value.$2 / 100))
+                  .toList();
 
-                return Flexible(
-                  flex: 10,
-                  child: SfCartesianChart(
-                    plotAreaBorderWidth: 0,
-                    primaryXAxis: CategoryAxis(isVisible: false),
-                    primaryYAxis: NumericAxis(
-                      isVisible: false,
-                      numberFormat: NumberFormat.percentPattern(),
+              return Flexible(
+                flex: 10,
+                child: SfCartesianChart(
+                  plotAreaBorderWidth: 0,
+                  primaryXAxis: CategoryAxis(isVisible: false),
+                  primaryYAxis: NumericAxis(
+                    isVisible: false,
+                    numberFormat: NumberFormat.percentPattern(),
+                  ),
+                  series: <CartesianSeries>[
+                    StackedBar100Series<ChartData, String>(
+                      width: 1.0,
+                      spacing: 0,
+                      dataSource: data,
+                      xValueMapper: (ChartData data, _) => data.x,
+                      yValueMapper: (ChartData data, _) => data.y,
+                      pointColorMapper: (ChartData data, int index) =>
+                          _getSegmentColor(index), // Use a helper function
+                      dataLabelSettings: DataLabelSettings(
+                        isVisible: true,
+                        showZeroValue: false,
+                        labelAlignment: ChartDataLabelAlignment.middle,
+                      ),
                     ),
-                    series: <CartesianSeries>[
-                      StackedBar100Series<ChartData, String>(
-                        width: 1.0,
-                        spacing: 0,
-                        dataSource: data,
-                        xValueMapper: (ChartData data, _) => data.x,
-                        yValueMapper: (ChartData data, _) => data.y,
-                        pointColorMapper: (ChartData data, int index) =>
-                            _getSegmentColor(index), // Use a helper function
-                        dataLabelSettings: DataLabelSettings(
-                          isVisible: true,
-                          showZeroValue: false,
-                          labelAlignment: ChartDataLabelAlignment.middle,
-                        ),
-                      ),
-                    ],
+                  ],
+                ),
+              );
+            } else {
+              return Flexible(
+                flex: 10,
+                child: SfCartesianChart(
+                  primaryXAxis: CategoryAxis(isVisible: false),
+                  primaryYAxis: NumericAxis(
+                    isVisible: false,
+                    numberFormat: NumberFormat.percentPattern(),
                   ),
-                );
-              } else {
-                return Flexible(
-                  flex: 10,
-                  child: SfCartesianChart(
-                    primaryXAxis: CategoryAxis(isVisible: false),
-                    primaryYAxis: NumericAxis(
-                      isVisible: false,
-                      numberFormat: NumberFormat.percentPattern(),
+                  series: <CartesianSeries>[
+                    StackedBar100Series<ChartData, String>(
+                      width: 1.0,
+                      spacing: 0,
+                      dataSource: [
+                        ChartData("Winrate", 0.50),
+                        ChartData("Winrate", 0.50),
+                      ],
+                      xValueMapper: (ChartData data, _) => data.x,
+                      yValueMapper: (ChartData data, _) => data.y,
+                      pointColorMapper: (ChartData data, int index) =>
+                          _getSegmentColor(index), // Use a helper function
+                      dataLabelSettings: DataLabelSettings(
+                        isVisible: true,
+                        showZeroValue: false,
+                        labelAlignment: ChartDataLabelAlignment.middle,
+                      ),
                     ),
-                    series: <CartesianSeries>[
-                      StackedBar100Series<ChartData, String>(
-                        width: 1.0,
-                        spacing: 0,
-                        dataSource: [
-                          ChartData("Winrate", 0.50),
-                          ChartData("Winrate", 0.50),
-                        ],
-                        xValueMapper: (ChartData data, _) => data.x,
-                        yValueMapper: (ChartData data, _) => data.y,
-                        pointColorMapper: (ChartData data, int index) =>
-                            _getSegmentColor(index), // Use a helper function
-                        dataLabelSettings: DataLabelSettings(
-                          isVisible: true,
-                          showZeroValue: false,
-                          labelAlignment: ChartDataLabelAlignment.middle,
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }
-            },
-          ),
-          // Switch Land / Sea
-          Expanded(
-            flex: 80,
-            child: Row(
-              children: [
-                Flexible(
-                  child: Column(
-                    children: [
-                      _diceCard(
-                        _blue,
-                        _getDiceDisplay(appState.diceTotal[0], 0, true),
-                        _getDiceDisplay(appState.diceTotal[0], 1, false),
-                        Text("BlueFor"),
-                      ),
-                      _buildColumnContent(0, _isLand, _blue),
-                    ],
-                  ),
+                  ],
                 ),
-                Flexible(
-                  child: Column(
-                    children: [
-                      _diceCard(
-                        _red,
-                        _getDiceDisplay(appState.diceTotal[1], 0, true),
-                        _getDiceDisplay(appState.diceTotal[1], 1, false),
-                        Text("RedFor"),
+              );
+            }
+          },
+        ),
+        // Switch Land / Sea
+        Expanded(
+          flex: 80,
+          child: Row(
+            children: [
+              Flexible(
+                child: Column(
+                  children: [
+                    _diceCard(
+                      _blue,
+                      _getDiceDisplay(appState.diceTotal.diceVsAir[0], 0, true),
+                      _getDiceDisplay(
+                        appState.diceTotal.diceVsGround[0],
+                        0,
+                        false,
                       ),
-                      _buildColumnContent(1, _isLand, _red),
-                    ],
-                  ),
+                      Text("BlueFor"),
+                    ),
+                    _buildColumnContent(0, _isLand, _blue),
+                  ],
                 ),
-              ],
-            ),
+              ),
+              Flexible(
+                child: Column(
+                  children: [
+                    _diceCard(
+                      _red,
+                      _getDiceDisplay(appState.diceTotal.diceVsAir[1], 0, true),
+                      _getDiceDisplay(
+                        appState.diceTotal.diceVsGround[1],
+                        0,
+                        false,
+                      ),
+                      Text("RedFor"),
+                    ),
+                    _buildColumnContent(1, _isLand, _red),
+                  ],
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -784,37 +760,49 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
       return const Center(child: Text("No data yet. Please calculate."));
     }
 
-    return Expanded(
-      child: Row(
-        children: [
-          Expanded(
-            child: Column(
-              children: [
-                _diceCard(
-                  _blue,
-                  _getDiceDisplay(appState.diceTotal[0], 0, true),
-                  _getDiceDisplay(appState.diceTotal[0], 1, false),
-                  Text("BlueFor"),
+    return Column(
+      children: [
+        Expanded(
+          child: Row(
+            children: [
+              Expanded(
+                child: Column(
+                  children: [
+                    _diceCard(
+                      _blue,
+                      _getDiceDisplay(appState.diceTotal.diceVsAir[0], 0, true),
+                      _getDiceDisplay(
+                        appState.diceTotal.diceVsGround[0],
+                        0,
+                        false,
+                      ),
+                      Text("BlueFor"),
+                    ),
+                    _buildColumnBarPlot(0, _isLand, _blue),
+                  ],
                 ),
-                _buildColumnBarPlot(0, _isLand, _blue),
-              ],
-            ),
-          ),
-          Expanded(
-            child: Column(
-              children: [
-                _diceCard(
-                  _red,
-                  _getDiceDisplay(appState.diceTotal[1], 0, true),
-                  _getDiceDisplay(appState.diceTotal[1], 1, false),
-                  Text("RedFor"),
+              ),
+              Expanded(
+                child: Column(
+                  children: [
+                    _diceCard(
+                      _red,
+                      _getDiceDisplay(appState.diceTotal.diceVsAir[1], 0, true),
+                      _getDiceDisplay(
+                        appState.diceTotal.diceVsGround[1],
+                        0,
+                        false,
+                      ),
+                      Text("RedFor"),
+                    ),
+                    _buildColumnBarPlot(1, _isLand, _red),
+                  ],
                 ),
-                _buildColumnBarPlot(1, _isLand, _red),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 
@@ -856,5 +844,8 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
 }
 
 void main() {
+  FlutterError.onError = (FlutterErrorDetails details) {
+    debugPrint('FlutterErrorDetails: $details');
+  };
   runApp(const MaterialApp(home: WarRoomBattleSimApp()));
 }
