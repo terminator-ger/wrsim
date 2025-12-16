@@ -55,6 +55,7 @@ jobs:
         run: |
           mkdir -p artifacts
           cp build/app/outputs/flutter-apk/*.apk artifacts/
+          mv artifacts/app-release.apk artifacts/warroombattlesim.apk
 
       # ─────────────── ONLY ON TAGS ───────────────
       - name: Create or update Release
@@ -123,6 +124,8 @@ jobs:
         run: |
           mkdir -p artifacts
           cp -r build/linux/x64/release/bundle/* artifacts/
+          cd artifacts
+          tar -czf warroombattlesim.tar.gz *
 
       # ─────────────── ONLY ON TAGS ───────────────
       - name: Create or update Release
@@ -131,7 +134,7 @@ jobs:
         with:
           tag:       ${{ github.ref_name }}
           name:      Release ${{ github.ref_name }}
-          artifacts: "artifacts/*"
+          artifacts: "artifacts/*.tar.gz"
           token:     ${{ secrets.GITHUB_TOKEN }}
           bodyFile: "body.md"
           allowUpdates: true
