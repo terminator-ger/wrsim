@@ -72,89 +72,98 @@ class _DiceCardState extends State<DiceCard> {
 
   final LayerLink _link = LayerLink();
   OverlayEntry? _entry;
-  var _overlayController = OverlayPortalController();
+  final _overlayController = OverlayPortalController();
 
-  void _showOverlay(double containerWidth, double containerHeight) {
-    _entry?.remove();
-
-    _entry = OverlayEntry(
-      builder: (_) => CompositedTransformFollower(
-        link: _link,
-        targetAnchor: Alignment.center,
-        followerAnchor: Alignment.center,
-        child: AbsorbPointer(
-          absorbing: false,
+  void _toggleOverlay(double containerWidth, double containerHeight) {
+    if (!(_entry == null)) {
+      _entry?.remove();
+      _entry = null;
+    } else {
+      _entry = OverlayEntry(
+        builder: (_) => CompositedTransformFollower(
+          link: _link,
+          targetAnchor: Alignment.center,
+          followerAnchor: Alignment.center,
           child: GestureDetector(
             onTap: _overlayController.toggle,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                SizedBox(
-                  width: containerWidth,
-                  child: Visibility(
-                    visible: widget.getUnitCount() > 0,
+            child: AbsorbPointer(
+              absorbing: false,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  SizedBox(
+                    width: containerWidth,
+                    height: containerHeight * 1.5,
                     child: Visibility(
-                      visible:
-                          //deactivate for submarines
-                          !(widget.unitIdentification.unitIdx == 0 &&
-                              !widget.unitIdentification.isAir &&
-                              !widget.unitIdentification.isLand),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          //Flexible(child: icons[0]),
-                          UnitSelectorOverlay(
-                            value: widget.getStanceFraction(),
-                            min: 0.0,
-                            max: 1.0,
-                            onToggled: (void none) {
-                              _overlayController.toggle();
-                              return;
-                            },
-                            onChanged: (double val) {
-                              widget.onStanceFractionChanged(val);
-                            },
-                            onIncr: () {
-                              widget.onStanceFractionIncreased();
-                            },
-                            onDecr: () {
-                              widget.onStanceFractionDecreased();
-                            },
+                      visible: widget.getUnitCount() > 0,
+                      child: Visibility(
+                        visible:
+                            //deactivate for submarines
+                            !(widget.unitIdentification.unitIdx == 0 &&
+                                !widget.unitIdentification.isAir &&
+                                !widget.unitIdentification.isLand),
+                        child: UnitSelectorOverlay(
+                          value: widget.getStanceFraction(),
+                          min: 0.0,
+                          max: 1.0,
+                          onToggled: (void none) {
+                            _overlayController.toggle();
+                            return;
+                          },
+                          onChanged: (double val) {
+                            widget.onStanceFractionChanged(val);
+                            _entry?.markNeedsBuild();
+                          },
+                          onIncr: () {
+                            widget.onStanceFractionIncreased();
+                            _entry?.markNeedsBuild();
+                          },
+                          onDecr: () {
+                            widget.onStanceFractionDecreased();
+                            _entry?.markNeedsBuild();
+                          },
 
-                            bowTopIsTop: true,
-                          ),
-                          //Flexible(child: icons[1]),
-                        ],
+                          bowTopIsTop: true,
+                        ),
+
+                        //Flexible(child: icons[1]),
                       ),
                     ),
                   ),
-                ),
-                SizedBox(
-                  width: containerWidth,
-                  child: UnitSelectorOverlay(
-                    value: widget.getUnitCount().toDouble(),
-                    onToggled: (void none) {
-                      _overlayController.toggle();
-                      return;
-                    },
-                    onChanged: (double val) {
-                      widget.onUnitCountChanged(val.toInt());
-                    },
-                    onDecr: widget.onUnitCountDecreased,
-                    onIncr: widget.onUnitCountIncreased,
-                    bowTopIsTop: false,
+                  SizedBox(
+                    width: containerWidth,
+                    height: containerHeight * 1.5,
+                    child: UnitSelectorOverlay(
+                      value: widget.getUnitCount().toDouble(),
+                      onToggled: (void none) {
+                        _overlayController.toggle();
+                        return;
+                      },
+                      onChanged: (double val) {
+                        widget.onUnitCountChanged(val.toInt());
+                        _entry?.markNeedsBuild();
+                      },
+                      onDecr: () {
+                        widget.onUnitCountDecreased();
+                        _entry?.markNeedsBuild();
+                      },
+                      onIncr: () {
+                        widget.onUnitCountIncreased();
+                        _entry?.markNeedsBuild();
+                      },
+                      bowTopIsTop: false,
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
-      ),
-    );
-
-    Overlay.of(context).insert(_entry!);
+      );
+      Overlay.of(context).insert(_entry!);
+    }
   }
 
   @override
@@ -170,25 +179,30 @@ class _DiceCardState extends State<DiceCard> {
               return CompositedTransformTarget(
                 link: _link,
                 child: GestureDetector(
-                  onTap: () =>
-                      _showOverlay(constraints.maxWidth, constraints.maxHeight),
-                  child: Column(
-                    children: [
-                      Flexible(
-                        flex: 1,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Flexible(flex: 1, child: widget.diceLeft),
-                            widget.hasUnitIcon
-                                ? Flexible(flex: 1, child: getCenterItem())
-                                : Container(),
-                            Flexible(flex: 1, child: widget.diceRight),
-                          ],
+                  onTap: () => _toggleOverlay(
+                    constraints.maxWidth,
+                    constraints.maxHeight,
+                  ),
+                  child: AbsorbPointer(
+                    absorbing: true,
+                    child: Column(
+                      children: [
+                        Flexible(
+                          flex: 1,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              Flexible(flex: 1, child: widget.diceLeft),
+                              widget.hasUnitIcon
+                                  ? Flexible(flex: 1, child: getCenterItem())
+                                  : Container(),
+                              Flexible(flex: 1, child: widget.diceRight),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               );

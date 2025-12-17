@@ -40,9 +40,6 @@ class UnitSelector extends StatefulWidget {
 }
 
 class _UniteSelectorState extends State<UnitSelector> {
-  final LayerLink _link = LayerLink();
-  var _overlayController = OverlayPortalController();
-
   ButtonStyle get_button_style(double radius, bool isLand, bool isAir) {
     if (isAir) {
       return ElevatedButton.styleFrom(
@@ -69,10 +66,6 @@ class _UniteSelectorState extends State<UnitSelector> {
     }
   }
 
-  void toggle() {
-    _overlayController.toggle();
-  }
-
   @override
   Widget build(BuildContext context) {
     List<Image> icons = wr_utils.getStanceIcons(widget.unitIdentification);
@@ -94,25 +87,25 @@ class _UniteSelectorState extends State<UnitSelector> {
         ),
         Flexible(
           flex: 2,
-          child: CompositedTransformTarget(
-            link: _link,
-            child: LayoutBuilder(
-              builder: (context, BoxConstraints constraints) {
-                final borderRadius = constraints.maxWidth;
-                return ElevatedButton(
+          child: LayoutBuilder(
+            builder: (context, BoxConstraints constraints) {
+              final borderRadius = constraints.maxWidth;
+              return IgnorePointer(
+                child: ElevatedButton(
                   clipBehavior: Clip.antiAlias,
-                  onPressed: _overlayController.toggle,
+                  onPressed: () => {},
                   style: get_button_style(
                     borderRadius,
                     widget.unitIdentification.isLand,
                     widget.unitIdentification.isAir,
                   ),
                   child: wr_utils.getUnitIcon(widget.unitIdentification),
-                );
-              },
-            ),
+                ),
+              );
+            },
           ),
         ),
+
         Expanded(
           flex: 1,
           child: Row(

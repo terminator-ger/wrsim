@@ -12,7 +12,7 @@ class UnitSelectorOverlay extends StatefulWidget {
   final double max;
   final bowTopIsTop;
 
-  const UnitSelectorOverlay({
+  UnitSelectorOverlay({
     super.key,
     required this.value,
     this.min = 0,
@@ -31,25 +31,30 @@ class UnitSelectorOverlay extends StatefulWidget {
 class _UnitselectoroverlayState extends State<UnitSelectorOverlay> {
   @override
   Widget build(BuildContext context) {
-    return Flexible(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Flexible(
-            flex: 1,
-            child: ElevatedButton(
-              onPressed: widget.onDecr,
-              child: Icon(Icons.remove),
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      //crossAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Flexible(
+          flex: 1,
+          child: ElevatedButton(
+            onPressed: widget.onDecr,
+            style: ButtonStyle(
+              backgroundColor: WidgetStatePropertyAll<Color>(Colors.blueGrey),
             ),
+            child: SizedBox(child: Icon(Icons.remove, color: Colors.black)),
           ),
-          Flexible(
-            flex: 4,
+        ),
+        Flexible(
+          flex: 4,
+          child: IgnorePointer(
+            ignoring: true,
             child: SfRadialGauge(
               axes: <RadialAxis>[
                 RadialAxis(
                   startAngle: widget.bowTopIsTop ? 180 : 0,
                   endAngle: widget.bowTopIsTop ? 360 : 180,
+                  radiusFactor: 0.9,
                   isInversed: !widget.bowTopIsTop,
                   minimum: widget.min,
                   maximum: widget.max,
@@ -63,7 +68,7 @@ class _UnitselectoroverlayState extends State<UnitSelectorOverlay> {
                       markerHeight: 25,
                       markerWidth: 25,
                       markerType: MarkerType.circle,
-                      color: Colors.lightBlue,
+                      color: Colors.blueAccent,
                       borderWidth: 3,
                       borderColor: Colors.black,
                       onValueChanged: (v) {
@@ -73,22 +78,25 @@ class _UnitselectoroverlayState extends State<UnitSelectorOverlay> {
                   ],
                   axisLineStyle: AxisLineStyle(
                     cornerStyle: CornerStyle.bothCurve,
-                    color: Colors.white70,
+                    color: Colors.blueGrey,
                     thickness: 20,
                   ),
                 ),
               ],
             ),
           ),
-          Flexible(
-            flex: 1,
-            child: ElevatedButton(
-              onPressed: widget.onIncr,
-              child: Icon(Icons.add),
+        ),
+        Flexible(
+          flex: 1,
+          child: ElevatedButton(
+            style: ButtonStyle(
+              backgroundColor: WidgetStatePropertyAll<Color>(Colors.blueGrey),
             ),
+            onPressed: widget.onIncr,
+            child: Icon(Icons.add, color: Colors.black),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
