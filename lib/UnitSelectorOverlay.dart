@@ -39,10 +39,13 @@ class _UnitselectoroverlayState extends State<UnitSelectorOverlay> {
           flex: 1,
           child: ElevatedButton(
             onPressed: widget.onDecr,
-            style: ButtonStyle(
-              backgroundColor: WidgetStatePropertyAll<Color>(Colors.blueGrey),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blueGrey,
+              padding: const EdgeInsets.all(2),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
-            child: SizedBox(child: Icon(Icons.remove, color: Colors.black)),
+
+            child: FittedBox(child: Icon(Icons.remove, color: Colors.black)),
           ),
         ),
         Flexible(
@@ -89,11 +92,13 @@ class _UnitselectoroverlayState extends State<UnitSelectorOverlay> {
         Flexible(
           flex: 1,
           child: ElevatedButton(
-            style: ButtonStyle(
-              backgroundColor: WidgetStatePropertyAll<Color>(Colors.blueGrey),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.blueGrey,
+              padding: const EdgeInsets.all(2),
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
             onPressed: widget.onIncr,
-            child: Icon(Icons.add, color: Colors.black),
+            child: FittedBox(child: Icon(Icons.add, color: Colors.black)),
           ),
         ),
       ],

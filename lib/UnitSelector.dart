@@ -109,32 +109,25 @@ class _UniteSelectorState extends State<UnitSelector> {
         Expanded(
           flex: 1,
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Expanded(
                 flex: 1,
-                child: Align(
-                  alignment: AlignmentGeometry.centerLeft,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      icons[0],
-                      Text(widget.getUnitCountStance0().toString()),
-                    ],
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    icons[0],
+                    Text(widget.getUnitCountStance0().toString()),
+                  ],
                 ),
               ),
               Expanded(
                 flex: 1,
-                child: Align(
-                  alignment: AlignmentGeometry.centerRight,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      icons[1],
-                      Text(widget.getUnitCountStance1().toString()),
-                    ],
-                  ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    icons[1],
+                    Text(widget.getUnitCountStance1().toString()),
+                  ],
                 ),
               ),
             ],
