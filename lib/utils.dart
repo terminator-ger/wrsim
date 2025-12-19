@@ -3,6 +3,16 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:warroombattlesim/UnitIdentification.dart';
 
+Image getChartBackgroundIcon(bool isAir, bool isLand) {
+  if (isAir) {
+    return Image.asset('resources/air_bg.png', fit: BoxFit.contain);
+  } else if (isLand) {
+    return Image.asset('resources/ground_bg.png', fit: BoxFit.contain);
+  } else {
+    return Image.asset('resources/sea_bg.png', fit: BoxFit.contain);
+  }
+}
+
 List<Image> getStanceIcons(UnitIdentification unitIdentification) {
   // air
   if (unitIdentification.isAir && unitIdentification.unitIdx == 3) {

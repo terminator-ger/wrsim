@@ -7,6 +7,7 @@ import 'package:warroombattlesim/DiceCard.dart';
 import 'package:warroombattlesim/UnitIdentification.dart';
 import 'package:warroombattlesim/UnitState.dart';
 import 'package:warroombattlesim/UnitSelector.dart';
+import 'package:warroombattlesim/utils.dart' as wr_utils;
 import 'package:wheel_picker/wheel_picker.dart';
 import 'package:wrdice/wrdice.dart' as wrdice;
 import 'package:wrdice/wrdice_bindings_generated.dart';
@@ -723,32 +724,52 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
         color: isAir ? _colour_air : _colour_land,
         child: Padding(
           padding: const EdgeInsets.all(10),
-          child: BarChart(
-            BarChartData(
-              maxY: 1.0,
-              gridData: FlGridData(
-                drawHorizontalLine: true,
-                drawVerticalLine: false,
-              ),
-              borderData: FlBorderData(show: false),
-              barTouchData: BarTouchData(enabled: false),
-              titlesData: FlTitlesData(
-                show: true,
-                rightTitles: const AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
-                ),
-                topTitles: const AxisTitles(
-                  sideTitles: SideTitles(showTitles: false),
-                ),
-                bottomTitles: AxisTitles(
-                  sideTitles: SideTitles(showTitles: true, reservedSize: 25),
-                ),
-                leftTitles: const AxisTitles(
-                  sideTitles: SideTitles(showTitles: true, reservedSize: 30),
+          child: Stack(
+            children: [
+              Center(
+                child: FractionallySizedBox(
+                  widthFactor: 0.5,
+                  heightFactor: 0.5,
+                  child: Opacity(
+                    opacity: 0.2,
+                    child: wr_utils.getChartBackgroundIcon(isAir, isLand),
+                  ),
                 ),
               ),
-              barGroups: barroddata.values.toList(),
-            ),
+              BarChart(
+                BarChartData(
+                  maxY: 1.0,
+                  gridData: FlGridData(
+                    drawHorizontalLine: true,
+                    drawVerticalLine: false,
+                  ),
+                  borderData: FlBorderData(show: false),
+                  barTouchData: BarTouchData(enabled: false),
+                  titlesData: FlTitlesData(
+                    show: true,
+                    rightTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    topTitles: const AxisTitles(
+                      sideTitles: SideTitles(showTitles: false),
+                    ),
+                    bottomTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 25,
+                      ),
+                    ),
+                    leftTitles: const AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 30,
+                      ),
+                    ),
+                  ),
+                  barGroups: barroddata.values.toList(),
+                ),
+              ),
+            ],
           ),
         ),
       ),
