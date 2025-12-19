@@ -728,8 +728,8 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
             children: [
               Center(
                 child: FractionallySizedBox(
-                  widthFactor: 0.5,
-                  heightFactor: 0.5,
+                  widthFactor: 0.75,
+                  heightFactor: 0.75,
                   child: Opacity(
                     opacity: 0.2,
                     child: wr_utils.getChartBackgroundIcon(isAir, isLand),

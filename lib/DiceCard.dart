@@ -93,13 +93,13 @@ class _DiceCardState extends State<DiceCard> {
       builder: (context) => SizedBox(
         height: height,
         width: width,
-        child: CompositedTransformFollower(
-          link: _link,
-          targetAnchor: Alignment.center,
-          followerAnchor: Alignment.center,
-          child: GestureDetector(
-            behavior: HitTestBehavior.translucent,
-            onTap: () => _hideOverlay(),
+        child: GestureDetector(
+          behavior: HitTestBehavior.translucent,
+          onTap: () => _hideOverlay(),
+          child: CompositedTransformFollower(
+            link: _link,
+            targetAnchor: Alignment.center,
+            followerAnchor: Alignment.center,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
