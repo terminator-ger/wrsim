@@ -88,6 +88,7 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
   Null Function(int val) updateUnitCount(UnitIdentification x) {
     return (int val) {
       _updateUnitCount(x.columnIndex, val, x.unitIdx, x.isLand, x.isAir);
+      _calculate();
     };
   }
 
@@ -108,6 +109,7 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
         x.isLand,
         x.isAir,
       );
+      _calculate();
     };
   }
 
@@ -128,12 +130,14 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
         x.isLand,
         x.isAir,
       );
+      _calculate();
     };
   }
 
   Null Function(double val) updateStance(UnitIdentification x) {
     return (double val) {
       _updateStance(x.columnIndex, val, x.unitIdx, x.isLand, x.isAir);
+      _calculate();
     };
   }
 
@@ -153,6 +157,7 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
 
       //update dice
       updateDice(x.columnIndex);
+      _calculate();
     };
   }
 
@@ -172,6 +177,7 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
 
       //update dice
       updateDice(x.columnIndex);
+      _calculate();
     };
   }
 
@@ -193,6 +199,7 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
       isLand,
       isAir,
     );
+    _calculate();
   }
 
   UnitState getUnitState(bool isAir, bool isLand) {
