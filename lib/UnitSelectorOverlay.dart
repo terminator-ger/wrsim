@@ -49,44 +49,41 @@ class _UnitselectoroverlayState extends State<UnitSelectorOverlay> {
           ),
         ),
         Flexible(
-          flex: 4,
-          child: IgnorePointer(
-            ignoring: true,
-            child: SfRadialGauge(
-              axes: <RadialAxis>[
-                RadialAxis(
-                  startAngle: widget.bowTopIsTop ? 180 : 0,
-                  endAngle: widget.bowTopIsTop ? 360 : 180,
-                  radiusFactor: 0.9,
-                  isInversed: !widget.bowTopIsTop,
-                  minimum: widget.min,
-                  maximum: widget.max,
-                  showLabels: false,
-                  showTicks: false,
-                  canScaleToFit: true,
-                  pointers: <GaugePointer>[
-                    MarkerPointer(
-                      value: widget.value,
-                      enableDragging: true,
-                      markerHeight: 25,
-                      markerWidth: 25,
-                      markerType: MarkerType.circle,
-                      color: Colors.blueAccent,
-                      borderWidth: 3,
-                      borderColor: Colors.black,
-                      onValueChanged: (v) {
-                        widget.onChanged.call(v);
-                      },
-                    ),
-                  ],
-                  axisLineStyle: AxisLineStyle(
-                    cornerStyle: CornerStyle.bothCurve,
-                    color: Colors.blueGrey,
-                    thickness: 20,
+          flex: 3,
+          child: SfRadialGauge(
+            axes: <RadialAxis>[
+              RadialAxis(
+                startAngle: widget.bowTopIsTop ? 180 : 0,
+                endAngle: widget.bowTopIsTop ? 360 : 180,
+                radiusFactor: 0.9,
+                isInversed: !widget.bowTopIsTop,
+                minimum: widget.min,
+                maximum: widget.max,
+                showLabels: false,
+                showTicks: false,
+                canScaleToFit: true,
+                pointers: <GaugePointer>[
+                  MarkerPointer(
+                    value: widget.value,
+                    enableDragging: true,
+                    markerHeight: 25,
+                    markerWidth: 25,
+                    markerType: MarkerType.circle,
+                    color: Colors.blueAccent,
+                    borderWidth: 3,
+                    borderColor: Colors.black,
+                    onValueChanged: (v) {
+                      widget.onChanged.call(v);
+                    },
                   ),
+                ],
+                axisLineStyle: AxisLineStyle(
+                  cornerStyle: CornerStyle.bothCurve,
+                  color: Colors.blueGrey,
+                  thickness: 20,
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
         ),
         Flexible(

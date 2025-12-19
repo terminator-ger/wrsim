@@ -78,25 +78,18 @@ class _DiceCardState extends State<DiceCard> {
   final _overlayController = OverlayPortalController();
   bool overlayIsShown = false;
 
-  _toggleOverlay(double width, double height) async {
+  _hideOverlay() async {
     if (overlayIsShown) {
       _entry.remove();
       overlayIsShown = false;
-    } else {
-      _overlayState = Overlay.of(context);
-      _entry = _buildOverlay(width, height);
-      _overlayState.insert(_entry);
-      overlayIsShown = true;
     }
   }
 
-  OverlayEntry _buildOverlay(double containerWidth, double containerHeight) {
-    //double width = MediaQuery.sizeOf(context).width;
-    //double height = MediaQuery.sizeOf(context).height;
-    Size size = WidgetsBinding.instance.window.physicalSize;
-    double width = size.width;
-    double height = size.height;
-    return OverlayEntry(
+  void _buildAndShowOverlay(double containerWidth, double containerHeight) {
+    double width = MediaQuery.sizeOf(context).width;
+    double height = MediaQuery.sizeOf(context).height;
+
+    _entry = OverlayEntry(
       builder: (context) => SizedBox(
         height: height,
         width: width,
@@ -106,7 +99,7 @@ class _DiceCardState extends State<DiceCard> {
           followerAnchor: Alignment.center,
           child: GestureDetector(
             behavior: HitTestBehavior.translucent,
-            onTap: () => _toggleOverlay(containerWidth, containerHeight),
+            onTap: () => _hideOverlay(),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -181,6 +174,10 @@ class _DiceCardState extends State<DiceCard> {
         ),
       ),
     );
+
+    _overlayState = Overlay.of(context);
+    _overlayState.insert(_entry);
+    overlayIsShown = true;
   }
 
   @override
@@ -196,7 +193,7 @@ class _DiceCardState extends State<DiceCard> {
               return CompositedTransformTarget(
                 link: _link,
                 child: GestureDetector(
-                  onTap: () => _toggleOverlay(
+                  onTap: () => _buildAndShowOverlay(
                     constraints.maxWidth,
                     constraints.maxHeight,
                   ),
@@ -232,7 +229,9 @@ class _DiceCardState extends State<DiceCard> {
 
   @override
   void dispose() {
-    _entry.remove();
+    if (overlayIsShown) {
+      _hideOverlay();
+    }
     super.dispose();
   }
 }
