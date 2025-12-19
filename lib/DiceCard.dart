@@ -72,12 +72,15 @@ class _DiceCardState extends State<DiceCard> {
 
   final LayerLink _link = LayerLink();
   OverlayEntry? _entry;
+  OverlayEntry? _background;
   final _overlayController = OverlayPortalController();
 
   void _toggleOverlay(double containerWidth, double containerHeight) {
     if (!(_entry == null)) {
       _entry?.remove();
       _entry = null;
+      _background?.remove();
+      _background = null;
     } else {
       _entry = OverlayEntry(
         builder: (_) => CompositedTransformFollower(
@@ -162,6 +165,7 @@ class _DiceCardState extends State<DiceCard> {
           ),
         ),
       );
+
       Overlay.of(context).insert(_entry!);
     }
   }
