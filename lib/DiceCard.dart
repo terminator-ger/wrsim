@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:warroombattlesim/UnitIdentification.dart';
 import 'package:warroombattlesim/UnitSelector.dart';
@@ -71,103 +73,114 @@ class _DiceCardState extends State<DiceCard> {
   }
 
   final LayerLink _link = LayerLink();
-  OverlayEntry? _entry;
-  OverlayEntry? _background;
+  late OverlayEntry _entry;
+  late OverlayState _overlayState;
   final _overlayController = OverlayPortalController();
+  bool overlayIsShown = false;
 
-  void _toggleOverlay(double containerWidth, double containerHeight) {
-    if (!(_entry == null)) {
-      _entry?.remove();
-      _entry = null;
-      _background?.remove();
-      _background = null;
+  _toggleOverlay(double width, double height) async {
+    if (overlayIsShown) {
+      _entry.remove();
+      overlayIsShown = false;
     } else {
-      _entry = OverlayEntry(
-        builder: (_) => CompositedTransformFollower(
+      _overlayState = Overlay.of(context);
+      _entry = _buildOverlay(width, height);
+      _overlayState.insert(_entry);
+      overlayIsShown = true;
+    }
+  }
+
+  OverlayEntry _buildOverlay(double containerWidth, double containerHeight) {
+    //double width = MediaQuery.sizeOf(context).width;
+    //double height = MediaQuery.sizeOf(context).height;
+    Size size = WidgetsBinding.instance.window.physicalSize;
+    double width = size.width;
+    double height = size.height;
+    return OverlayEntry(
+      builder: (context) => SizedBox(
+        height: height,
+        width: width,
+        child: CompositedTransformFollower(
           link: _link,
           targetAnchor: Alignment.center,
           followerAnchor: Alignment.center,
           child: GestureDetector(
-            onTap: _overlayController.toggle,
-            child: AbsorbPointer(
-              absorbing: false,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                mainAxisSize: MainAxisSize.max,
-                children: [
-                  SizedBox(
-                    width: containerWidth,
-                    height: containerHeight * 1.5,
+            behavior: HitTestBehavior.translucent,
+            onTap: () => _toggleOverlay(containerWidth, containerHeight),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                SizedBox(
+                  width: containerWidth,
+                  height: containerHeight * 1.5,
+                  child: Visibility(
+                    visible: widget.getUnitCount() > 0,
                     child: Visibility(
-                      visible: widget.getUnitCount() > 0,
-                      child: Visibility(
-                        visible:
-                            //deactivate for submarines
-                            !(widget.unitIdentification.unitIdx == 0 &&
-                                !widget.unitIdentification.isAir &&
-                                !widget.unitIdentification.isLand),
-                        child: UnitSelectorOverlay(
-                          value: widget.getStanceFraction(),
-                          min: 0.0,
-                          max: 1.0,
-                          onToggled: (void none) {
-                            _overlayController.toggle();
-                            return;
-                          },
-                          onChanged: (double val) {
-                            widget.onStanceFractionChanged(val);
-                            _entry?.markNeedsBuild();
-                          },
-                          onIncr: () {
-                            widget.onStanceFractionIncreased();
-                            _entry?.markNeedsBuild();
-                          },
-                          onDecr: () {
-                            widget.onStanceFractionDecreased();
-                            _entry?.markNeedsBuild();
-                          },
+                      visible:
+                          //deactivate for submarines
+                          !(widget.unitIdentification.unitIdx == 0 &&
+                              !widget.unitIdentification.isAir &&
+                              !widget.unitIdentification.isLand),
+                      child: UnitSelectorOverlay(
+                        value: widget.getStanceFraction(),
+                        min: 0.0,
+                        max: 1.0,
+                        onToggled: (void none) {
+                          _overlayController.toggle();
+                          return;
+                        },
+                        onChanged: (double val) {
+                          widget.onStanceFractionChanged(val);
+                          _entry?.markNeedsBuild();
+                        },
+                        onIncr: () {
+                          widget.onStanceFractionIncreased();
+                          _entry?.markNeedsBuild();
+                        },
+                        onDecr: () {
+                          widget.onStanceFractionDecreased();
+                          _entry?.markNeedsBuild();
+                        },
 
-                          bowTopIsTop: true,
-                        ),
-
-                        //Flexible(child: icons[1]),
+                        bowTopIsTop: true,
                       ),
+
+                      //Flexible(child: icons[1]),
                     ),
                   ),
-                  SizedBox(
-                    width: containerWidth,
-                    height: containerHeight * 1.5,
-                    child: UnitSelectorOverlay(
-                      value: widget.getUnitCount().toDouble(),
-                      onToggled: (void none) {
-                        _overlayController.toggle();
-                        return;
-                      },
-                      onChanged: (double val) {
-                        widget.onUnitCountChanged(val.toInt());
-                        _entry?.markNeedsBuild();
-                      },
-                      onDecr: () {
-                        widget.onUnitCountDecreased();
-                        _entry?.markNeedsBuild();
-                      },
-                      onIncr: () {
-                        widget.onUnitCountIncreased();
-                        _entry?.markNeedsBuild();
-                      },
-                      bowTopIsTop: false,
-                    ),
+                ),
+                SizedBox(
+                  width: containerWidth,
+                  height: containerHeight * 1.5,
+                  child: UnitSelectorOverlay(
+                    value: widget.getUnitCount().toDouble(),
+                    onToggled: (void none) {
+                      _overlayController.toggle();
+                      return;
+                    },
+                    onChanged: (double val) {
+                      widget.onUnitCountChanged(val.toInt());
+                      _entry?.markNeedsBuild();
+                    },
+                    onDecr: () {
+                      widget.onUnitCountDecreased();
+                      _entry?.markNeedsBuild();
+                    },
+                    onIncr: () {
+                      widget.onUnitCountIncreased();
+                      _entry?.markNeedsBuild();
+                    },
+                    bowTopIsTop: false,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
           ),
         ),
-      );
-
-      Overlay.of(context).insert(_entry!);
-    }
+      ),
+    );
   }
 
   @override
@@ -219,7 +232,7 @@ class _DiceCardState extends State<DiceCard> {
 
   @override
   void dispose() {
-    _entry?.remove();
+    _entry.remove();
     super.dispose();
   }
 }
