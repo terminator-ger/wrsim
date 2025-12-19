@@ -3,12 +3,12 @@ flutter_launcher_icons:
   image_path: "resources/splash.png"
 
   android: "launcher_icon"
-  # image_path_android: "assets/splash.png"
+  # image_path_android: "assets/icon/icon.png"
   min_sdk_android: 21 # android min sdk min:16, default 21
-  # adaptive_icon_background: "assets/splash.png"
-  # adaptive_icon_foreground: "assets/plash.png"
-  # adaptive_icon_foreground_inset: 16
-  # adaptive_icon_monochrome: "assets/splash_gray.png"
+  # adaptive_icon_background: "assets/icon/background.png"
+  # adaptive_icon_foreground: "assets/icon/foreground.png"
+  # adaptive_icon_foreground_inset: 2
+  adaptive_icon_monochrome: "resources/splash_gray.png"
 
   ios: false
   # image_path_ios: "assets/icon/icon.png"
@@ -25,10 +25,10 @@ flutter_launcher_icons:
     theme_color: "#hexcode"
 
   windows:
-    generate: true
-    image_path: "resources/splash.png"
+    generate: false
+    image_path: "path/to/image.png"
     icon_size: 48 # min:48, max:256, default: 48
 
   macos:
-    generate: true
-    image_path: "resources/splash.png"
+    generate: false
+    image_path: "path/to/image.png"

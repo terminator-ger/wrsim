@@ -1,31 +1,25 @@
-
-
 class UnitState {
-  List<List<int>> unitCount = [
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-  ];
-  List<List<int>> stanceOff = [
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-  ];
-  List<List<int>> stanceDef = [
-    [0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0],
-  ];
-  List<List<double>> stanceFractions = [
-    [0.0, 0.0, 0.0, 0.0, 0.0],
-    [0.0, 0.0, 0.0, 0.0, 0.0],
-  ];
+  final int len;
 
-  List<List<int>> diceVsAir = [
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
-  ];
+  late List<List<int>> unitCount;
+  late List<List<int>> stanceOff;
+  late List<List<int>> stanceDef;
+  late List<List<double>> stanceFractions;
+  late List<List<int>> diceVsAir;
+  late List<List<int>> diceVsGround;
 
-  List<List<int>> diceVsGround = [
-    [0, 0, 0, 0, 0, 0],
-    [0, 0, 0, 0, 0, 0],
-  ];
+  UnitState({required this.len}) {
+    unitCount = [List<int>.filled(len, 0), List<int>.filled(len, 0)];
+    stanceOff = [List<int>.filled(len, 0), List<int>.filled(len, 0)];
+    stanceDef = [List<int>.filled(len, 0), List<int>.filled(len, 0)];
+
+    stanceFractions = [
+      List<double>.filled(len, 0.0),
+      List<double>.filled(len, 0.0),
+    ];
+
+    diceVsAir = [List<int>.filled(len, 0), List<int>.filled(len, 0)];
+
+    diceVsGround = [List<int>.filled(len, 0), List<int>.filled(len, 0)];
+  }
 }
-

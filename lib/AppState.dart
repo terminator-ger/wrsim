@@ -6,22 +6,19 @@ import 'package:warroombattlesim/UnitState.dart';
 import 'package:wrdice/wrdice.dart' as wrdice;
 
 class AppState {
-  UnitState land = UnitState();
-  UnitState air = UnitState();
-  UnitState sea = UnitState();
+  late UnitState land;
+  late UnitState air;
+  late UnitState sea;
+  late UnitState diceTotal;
 
-  List<List<int>> diceTotal = [
-    [0, 0],
-    [0, 0],
-  ];
+  AppState() {
+    reset();
+  }
 
   void reset() {
-    land = UnitState();
-    air = UnitState();
-    sea = UnitState();
-    diceTotal = [
-      [0, 0],
-      [0, 0],
-    ];
+    land = UnitState(len: 5);
+    air = UnitState(len: 5);
+    sea = UnitState(len: 5);
+    diceTotal = UnitState(len: 1);
   }
 }
