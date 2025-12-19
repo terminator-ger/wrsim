@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:collection';
 import 'dart:math';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
@@ -54,6 +55,7 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
   bool _isLand = true;
   bool _withBatchCap = true;
   late Completer<wrdice.DartSimStats> asyncResult = Completer();
+  bool autoBattle = true;
 
   Completer<wrdice.DartSimStats> addPlotsToResult(
     Future<wrdice.DartSimStats> future,
@@ -88,7 +90,9 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
   Null Function(int val) updateUnitCount(UnitIdentification x) {
     return (int val) {
       _updateUnitCount(x.columnIndex, val, x.unitIdx, x.isLand, x.isAir);
-      _calculate();
+      if (autoBattle) {
+        _calculate();
+      }
     };
   }
 
@@ -109,7 +113,9 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
         x.isLand,
         x.isAir,
       );
-      _calculate();
+      if (autoBattle) {
+        _calculate();
+      }
     };
   }
 
@@ -130,14 +136,18 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
         x.isLand,
         x.isAir,
       );
-      _calculate();
+      if (autoBattle) {
+        _calculate();
+      }
     };
   }
 
   Null Function(double val) updateStance(UnitIdentification x) {
     return (double val) {
       _updateStance(x.columnIndex, val, x.unitIdx, x.isLand, x.isAir);
-      _calculate();
+      if (autoBattle) {
+        _calculate();
+      }
     };
   }
 
@@ -157,7 +167,9 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
 
       //update dice
       updateDice(x.columnIndex);
-      _calculate();
+      if (autoBattle) {
+        _calculate();
+      }
     };
   }
 
@@ -177,7 +189,10 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
 
       //update dice
       updateDice(x.columnIndex);
-      _calculate();
+
+      if (autoBattle) {
+        _calculate();
+      }
     };
   }
 
@@ -199,7 +214,9 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
       isLand,
       isAir,
     );
-    _calculate();
+    if (autoBattle) {
+      _calculate();
+    }
   }
 
   UnitState getUnitState(bool isAir, bool isLand) {
@@ -427,7 +444,7 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
     });
     return Expanded(
       child: ListView(
-        padding: EdgeInsets.only(bottom: 100),
+        padding: EdgeInsets.only(bottom: 150, top: 150),
         scrollDirection: Axis.vertical,
         children: [
           Column(
@@ -700,7 +717,8 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
       isLand,
       isAir,
     );
-    late Map<int, BarChartGroupData> barroddata = {};
+    SplayTreeMap<int, BarChartGroupData> barroddata =
+        SplayTreeMap<int, BarChartGroupData>();
     for (int i in indexes) {
       for (int idx = 0; idx < barData[i].size; idx++) {
         if (barData[i].count[idx] > 0) {
@@ -773,6 +791,7 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
                       ),
                     ),
                   ),
+
                   barGroups: barroddata.values.toList(),
                 ),
               ),
@@ -850,7 +869,7 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
     return Scaffold(
       // appBar: AppBar(title: const Text("Units & Statistics")),
       body: SafeArea(child: _buildCurrentPage()),
-      floatingActionButton: _selectedNavIndex == 0
+      floatingActionButton: _selectedNavIndex == 0 && !autoBattle
           ? FloatingActionButton(
               onPressed: _calculate,
               child: const Icon(Symbols.casino_sharp),

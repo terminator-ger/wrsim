@@ -17,35 +17,35 @@ List<Image> getStanceIcons(UnitIdentification unitIdentification) {
   // air
   if (unitIdentification.isAir && unitIdentification.unitIdx == 3) {
     return [
-      Image.asset("resources/stance_air.png", fit: BoxFit.contain),
-      Image.asset("resources/bomb.png", fit: BoxFit.contain),
+      Image.asset("resources/stance_air.png", fit: BoxFit.scaleDown),
+      Image.asset("resources/bomb.png", fit: BoxFit.scaleDown),
     ];
   } else if (unitIdentification.isAir && unitIdentification.unitIdx == 2) {
     return [
-      Image.asset("resources/stance_air.png", fit: BoxFit.contain),
-      Image.asset("resources/stance_ground.png", fit: BoxFit.contain),
+      Image.asset("resources/stance_air.png", fit: BoxFit.scaleDown),
+      Image.asset("resources/stance_ground.png", fit: BoxFit.scaleDown),
     ];
     // land
   } else if (unitIdentification.isLand && unitIdentification.unitIdx == 1) {
     return [
-      Image.asset("resources/stance_air.png", fit: BoxFit.contain),
-      Image.asset("resources/stance_ground.png", fit: BoxFit.contain),
+      Image.asset("resources/stance_air.png", fit: BoxFit.scaleDown),
+      Image.asset("resources/stance_ground.png", fit: BoxFit.scaleDown),
     ];
   } else if (unitIdentification.isLand) {
     return [
-      Image.asset("resources/stance_def.png", fit: BoxFit.contain),
-      Image.asset("resources/stance_off.png", fit: BoxFit.contain),
+      Image.asset("resources/stance_def.png", fit: BoxFit.scaleDown),
+      Image.asset("resources/stance_off.png", fit: BoxFit.scaleDown),
     ];
     // sea
   } else if (unitIdentification.unitIdx == 1) {
     return [
-      Image.asset("resources/escort.png", fit: BoxFit.contain),
-      Image.asset("resources/stance_off.png", fit: BoxFit.contain),
+      Image.asset("resources/escort.png", fit: BoxFit.scaleDown),
+      Image.asset("resources/stance_off.png", fit: BoxFit.scaleDown),
     ];
   } else {
     return [
-      Image.asset("resources/stance_air.png", fit: BoxFit.contain),
-      Image.asset("resources/stance_off.png", fit: BoxFit.contain),
+      Image.asset("resources/stance_air.png", fit: BoxFit.scaleDown),
+      Image.asset("resources/stance_off.png", fit: BoxFit.scaleDown),
     ];
   }
 }

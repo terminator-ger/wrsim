@@ -69,20 +69,40 @@ class _UniteSelectorState extends State<UnitSelector> {
   @override
   Widget build(BuildContext context) {
     List<Image> icons = wr_utils.getStanceIcons(widget.unitIdentification);
+
     return Column(
       children: [
-        Flexible(
+        Expanded(
           flex: 1,
-          child: Text(
-            widget.getUnitCount().toString(),
-            style: TextStyle(
-              background: Paint()
-                ..color = Colors.white24
-                ..strokeWidth = 20
-                ..strokeJoin = StrokeJoin.round
-                ..strokeCap = StrokeCap.round
-                ..style = PaintingStyle.stroke,
-            ),
+          child: Row(
+            children: [
+              Expanded(
+                flex: 1,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      icons[0],
+                      Text(widget.getUnitCountStance0().toString()),
+                    ],
+                  ),
+                ),
+              ),
+              Expanded(
+                flex: 1,
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      icons[1],
+                      Text(widget.getUnitCountStance1().toString()),
+                    ],
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
         Flexible(
@@ -105,34 +125,7 @@ class _UniteSelectorState extends State<UnitSelector> {
             },
           ),
         ),
-
-        Expanded(
-          flex: 1,
-          child: Row(
-            children: [
-              Expanded(
-                flex: 1,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    icons[0],
-                    Text(widget.getUnitCountStance0().toString()),
-                  ],
-                ),
-              ),
-              Expanded(
-                flex: 1,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    icons[1],
-                    Text(widget.getUnitCountStance1().toString()),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
+        Flexible(flex: 1, child: Text(widget.getUnitCount().toString())),
       ],
     );
   }
