@@ -10,10 +10,6 @@ There are currently prebuild packages for Android, Linux and soon Windows.
 
 
 ## FAQ
-
-Q: I have found a bug!
-
-A: Feel free to open an issue or pull request.
 ___
 Q: What is the difference between the dark and light grey bar in the winning chance?
 
