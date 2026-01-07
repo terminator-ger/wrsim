@@ -513,10 +513,13 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
         ],
         selected: {_isLand},
         onSelectionChanged: (v) {
-          appState.reset;
+          appState.reset();
           setState(() {
             _isLand = v.first;
           });
+          updateDice(0);
+          updateDice(1);
+          _calcBattle(_isLand);
         },
       ),
     );
@@ -539,6 +542,7 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
           }
           updateDice(0);
           updateDice(1);
+          _calcBattle(_isLand);
         },
       ),
     );

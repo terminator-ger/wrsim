@@ -1,4 +1,4 @@
-# War Room Battle Simulator
+# WR Sim
 ![Example Combat](resources/banner.png)
 
 This app is battle calculator for the board game War Room. Simulate the outcome and make smarter decisions than your opponent!

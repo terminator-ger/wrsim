@@ -51,7 +51,7 @@ class _UniteSelectorState extends State<UnitSelector> {
       return ElevatedButton.styleFrom(
         minimumSize: Size.zero,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(radius / 8), // <--add this
+          borderRadius: BorderRadius.circular(radius / 8),
         ),
         padding: EdgeInsets.zero,
       );
@@ -59,7 +59,7 @@ class _UniteSelectorState extends State<UnitSelector> {
       return ElevatedButton.styleFrom(
         minimumSize: Size.zero,
         shape: BeveledRectangleBorder(
-          borderRadius: BorderRadius.circular(radius / 6), // <--add this
+          borderRadius: BorderRadius.circular(radius / 4),
         ),
         padding: EdgeInsets.zero,
       );
@@ -109,7 +109,7 @@ class _UniteSelectorState extends State<UnitSelector> {
           flex: 2,
           child: LayoutBuilder(
             builder: (context, BoxConstraints constraints) {
-              final borderRadius = constraints.maxWidth;
+              final borderRadius = constraints.maxHeight;
               return IgnorePointer(
                 child: ElevatedButton(
                   clipBehavior: Clip.antiAlias,
