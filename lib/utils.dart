@@ -13,39 +13,102 @@ Image getChartBackgroundIcon(bool isAir, bool isLand) {
   }
 }
 
-List<Image> getStanceIcons(UnitIdentification unitIdentification) {
+List<Widget> getStanceIcons(
+  BuildContext context,
+  UnitIdentification unitIdentification,
+) {
+  List<double> filter;
+  filter = [
+    //R  G   B    A  Const
+    1, 0, 0, 0, 0, //
+    0, 1, 0, 0, 0, //
+    0, 0, 1, 0, 0, //
+    0, 0, 0, 1, 0, //
+  ];
+
+  if (Theme.of(context).brightness == Brightness.dark) {
+    filter = [
+      //R  G   B    A  Const
+      -1, 0, 0, 0, 255, //
+      0, -1, 0, 0, 255, //
+      0, 0, -1, 0, 255, //
+      0, 0, 0, 1, 0, //
+    ];
+  }
   // air
   if (unitIdentification.isAir && unitIdentification.unitIdx == 3) {
     return [
-      Image.asset("resources/stance_air.png", fit: BoxFit.scaleDown),
-      Image.asset("resources/bomb.png", fit: BoxFit.scaleDown),
+      ColorFiltered(
+        colorFilter: ColorFilter.matrix(filter),
+        child: Image.asset("resources/stance_air.png", fit: BoxFit.scaleDown),
+      ),
+      ColorFiltered(
+        colorFilter: ColorFilter.matrix(filter),
+        child: Image.asset("resources/bomb.png", fit: BoxFit.scaleDown),
+      ),
     ];
   } else if (unitIdentification.isAir && unitIdentification.unitIdx == 2) {
     return [
-      Image.asset("resources/stance_air.png", fit: BoxFit.scaleDown),
-      Image.asset("resources/stance_ground.png", fit: BoxFit.scaleDown),
+      ColorFiltered(
+        colorFilter: ColorFilter.matrix(filter),
+        child: Image.asset("resources/stance_air.png", fit: BoxFit.scaleDown),
+      ),
+      ColorFiltered(
+        colorFilter: ColorFilter.matrix(filter),
+        child: Image.asset(
+          "resources/stance_ground.png",
+          fit: BoxFit.scaleDown,
+        ),
+      ),
     ];
     // land
   } else if (unitIdentification.isLand && unitIdentification.unitIdx == 1) {
     return [
-      Image.asset("resources/stance_air.png", fit: BoxFit.scaleDown),
-      Image.asset("resources/stance_ground.png", fit: BoxFit.scaleDown),
+      ColorFiltered(
+        colorFilter: ColorFilter.matrix(filter),
+        child: Image.asset("resources/stance_air.png", fit: BoxFit.scaleDown),
+      ),
+      ColorFiltered(
+        colorFilter: ColorFilter.matrix(filter),
+        child: Image.asset(
+          "resources/stance_ground.png",
+          fit: BoxFit.scaleDown,
+        ),
+      ),
     ];
   } else if (unitIdentification.isLand) {
     return [
-      Image.asset("resources/stance_def.png", fit: BoxFit.scaleDown),
-      Image.asset("resources/stance_off.png", fit: BoxFit.scaleDown),
+      ColorFiltered(
+        colorFilter: ColorFilter.matrix(filter),
+        child: Image.asset("resources/stance_def.png", fit: BoxFit.scaleDown),
+      ),
+      ColorFiltered(
+        colorFilter: ColorFilter.matrix(filter),
+        child: Image.asset("resources/stance_off.png", fit: BoxFit.scaleDown),
+      ),
     ];
     // sea
   } else if (unitIdentification.unitIdx == 1) {
     return [
-      Image.asset("resources/escort.png", fit: BoxFit.scaleDown),
-      Image.asset("resources/stance_off.png", fit: BoxFit.scaleDown),
+      ColorFiltered(
+        colorFilter: ColorFilter.matrix(filter),
+        child: Image.asset("resources/escort.png", fit: BoxFit.scaleDown),
+      ),
+      ColorFiltered(
+        colorFilter: ColorFilter.matrix(filter),
+        child: Image.asset("resources/stance_off.png", fit: BoxFit.scaleDown),
+      ),
     ];
   } else {
     return [
-      Image.asset("resources/stance_air.png", fit: BoxFit.scaleDown),
-      Image.asset("resources/stance_off.png", fit: BoxFit.scaleDown),
+      ColorFiltered(
+        colorFilter: ColorFilter.matrix(filter),
+        child: Image.asset("resources/stance_air.png", fit: BoxFit.scaleDown),
+      ),
+      ColorFiltered(
+        colorFilter: ColorFilter.matrix(filter),
+        child: Image.asset("resources/stance_off.png", fit: BoxFit.scaleDown),
+      ),
     ];
   }
 }

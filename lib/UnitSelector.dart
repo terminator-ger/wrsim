@@ -68,7 +68,10 @@ class _UniteSelectorState extends State<UnitSelector> {
 
   @override
   Widget build(BuildContext context) {
-    List<Image> icons = wr_utils.getStanceIcons(widget.unitIdentification);
+    List<Widget> icons = wr_utils.getStanceIcons(
+      context,
+      widget.unitIdentification,
+    );
 
     return Column(
       children: [
