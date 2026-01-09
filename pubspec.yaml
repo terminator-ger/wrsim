@@ -38,6 +38,8 @@ dependencies:
   syncfusion_flutter_gauges: ^31.2.16
   syncfusion_flutter_charts: ^31.2.16
   flutter_launcher_icons: ^0.14.4
+  flutter_native_splash: ^2.4.7
+  adaptive_theme: ^3.7.2
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -101,8 +103,8 @@ flutter:
 flutter_launcher_icons:
   android:  "launcher_icon"
   ios: false
-  image_path: "resources/wrbattlesim.png" 
-  adaptive_icon_foreground: "resources/wrbattlesim.png" # Set the foreground image (same or different from image_path)
+  image_path: "resources/logo.png" 
+  adaptive_icon_foreground: "resources/logo.png" # Set the foreground image (same or different from image_path)
   adaptive_icon_background: "#0e1012"
   remove_alpha_ios: true
   min_sdk_android: 21
