@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:collection';
 import 'dart:math';
 import 'package:adaptive_theme/adaptive_theme.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -31,6 +32,24 @@ class Stats {
   final Map<pieKey, (String, double)> pieData;
   final Map<pieKey, wrdice.DartStats> barData;
   Stats(this.pieData, this.barData);
+}
+
+class WarRoomApp extends StatelessWidget {
+  const WarRoomApp({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return AdaptiveTheme(
+      light: ThemeData.light(useMaterial3: true),
+      dark: ThemeData.dark(useMaterial3: true),
+      initial: AdaptiveThemeMode.dark,
+      builder: (theme, darkTheme) => MaterialApp(
+        theme: theme,
+        darkTheme: darkTheme,
+        home: WarRoomBattleSimApp(),
+      ),
+    );
+  }
 }
 
 class WarRoomBattleSimApp extends StatefulWidget {
@@ -870,6 +889,13 @@ class _WarRoomBattleSimAppState extends State<WarRoomBattleSimApp> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    SchedulerBinding.instance.addPostFrameCallback((_) {
+      AdaptiveTheme.of(context).setSystem();
+    });
+  }
+
   Widget build(BuildContext context) {
     return Scaffold(
       // appBar: AppBar(title: const Text("Units & Statistics")),
@@ -899,5 +925,5 @@ void main() {
   FlutterError.onError = (FlutterErrorDetails details) {
     debugPrint('FlutterErrorDetails: $details');
   };
-  runApp(const MaterialApp(home: WarRoomBattleSimApp()));
+  runApp(WarRoomApp());
 }

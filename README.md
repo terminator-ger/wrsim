@@ -16,6 +16,14 @@ Q: What is the difference between the dark and light grey bar in the winning cha
 A: Light grey is a tie after the battle, when both sides still have ground units and the area remains contested. 
 When the bar is dark grey no ground units survive the combat, land areas remain with the defender.
 
+Q: How are hits automatically assigned during combat evaluation?
+
+A: For now i use a priority order to assign free hits (black and white dice) to the most valuable units first. 
+
+Q: How does hit assignment for cruisers in escort stance work?
+
+A: For sea units escort hits are prioritized to be taken for battleships over carriers.
+
 ## Disclaimer
 This is a fanproject for the board game WAR ROOM. It's intent is to help you develop new straegies for the game and help you in your decisions thoughout the game.
 ```
