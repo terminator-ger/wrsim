@@ -113,6 +113,17 @@ List<Widget> getStanceIcons(
   }
 }
 
+Card getNationFlagCard(String side) {
+  return Card(
+    semanticContainer: true,
+    clipBehavior: Clip.antiAliasWithSaveLayer,
+    child: Image.asset("resources/$side.png", fit: BoxFit.fill),
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10.0)),
+    elevation: 5,
+    margin: EdgeInsets.all(3),
+  );
+}
+
 Image getUnitIcon(UnitIdentification unitIdentification) {
   late String key;
   if (unitIdentification.isAir) {
