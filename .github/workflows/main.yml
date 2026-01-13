@@ -86,7 +86,7 @@ jobs:
       - name: Prepare artifacts
         run: |
           mkdir -p artifacts
-          cp build\windows\runner\Release\ artifacts/
+          cp build\windows\x64\runner\Release\ artifacts/
 
       # ─────────────── ONLY ON TAGS ───────────────
       - name: Create or update Release
