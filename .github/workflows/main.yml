@@ -86,7 +86,7 @@ jobs:
       - name: Prepare artifacts
         run: |
           mkdir -p artifacts
-          cp build/linux/x86/release/bundle/ artifacts/
+          cp build\windows\runner\Release\ artifacts/
 
       # ─────────────── ONLY ON TAGS ───────────────
       - name: Create or update Release
