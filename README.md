@@ -11,10 +11,11 @@ There are currently prebuild packages for Android, Linux and soon Windows.
 
 ## FAQ
 ___
-Q: What is the difference between the dark and light grey bar in the winning chance?
+Q: What is the difference between the draw and mutual destruction?
 
-A: Light grey is a tie after the battle, when both sides still have ground units and the area remains contested. 
-When the bar is dark grey no ground units survive the combat, land areas remain with the defender.
+A: When there is a draw both sides still have ground units in the area after the battle and it remains contested. 
+When there is a mutual destruction no ground units on both sides survive the combat, land areas remain with the defender. 
+This is an important information for the attacker due to the pinning mechanics in the game.
 
 Q: How are hits automatically assigned during combat evaluation?
 
