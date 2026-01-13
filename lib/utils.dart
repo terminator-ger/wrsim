@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:warroombattlesim/UnitIdentification.dart';
+import 'package:wrsim/UnitIdentification.dart';
 
 Image getChartBackgroundIcon(bool isAir, bool isLand) {
   if (isAir) {

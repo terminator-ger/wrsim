@@ -1,6 +1,6 @@
 {
-    "name": "warroombattlesim",
-    "short_name": "warroombattlesim",
+    "name": "wrsim",
+    "short_name": "wrsim",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -1,4 +1,4 @@
-package com.example.warroombattlesim
+package com.example.wrsim
 
 import io.flutter.embedding.android.FlutterActivity
 
