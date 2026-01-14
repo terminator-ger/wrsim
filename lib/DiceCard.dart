@@ -1,11 +1,11 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:wrsim/UnitIdentification.dart';
-import 'package:wrsim/UnitSelector.dart';
-import 'package:wrsim/UnitSelectorOverlay.dart';
-import 'package:wrsim/UnitState.dart';
-import 'package:wrsim/utils.dart' as wr_utils;
+import 'package:wrbattlesim/UnitIdentification.dart';
+import 'package:wrbattlesim/UnitSelector.dart';
+import 'package:wrbattlesim/UnitSelectorOverlay.dart';
+import 'package:wrbattlesim/UnitState.dart';
+import 'package:wrbattlesim/utils.dart' as wr_utils;
 
 class DiceCard extends StatefulWidget {
   final Color background;

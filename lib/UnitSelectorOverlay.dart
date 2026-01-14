@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
-import 'package:wrsim/UnitState.dart';
+import 'package:wrbattlesim/UnitState.dart';
 
 class UnitSelectorOverlay extends StatefulWidget {
   final double value;

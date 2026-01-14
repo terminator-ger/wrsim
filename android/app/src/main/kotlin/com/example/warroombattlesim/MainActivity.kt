@@ -1,4 +1,4 @@
-package com.example.wrsim
+package com.example.wrbattlesim
 
 import io.flutter.embedding.android.FlutterActivity
 

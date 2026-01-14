@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:wrsim/UnitIdentification.dart';
-import 'package:wrsim/UnitState.dart';
+import 'package:wrbattlesim/UnitIdentification.dart';
+import 'package:wrbattlesim/UnitState.dart';
 import 'package:wrdice/wrdice.dart' as wrdice;
 
 class AppState {

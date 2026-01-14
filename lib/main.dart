@@ -6,17 +6,17 @@ import 'package:flutter/scheduler.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
-import 'package:wrsim/DiceCard.dart';
-import 'package:wrsim/UnitIdentification.dart';
-import 'package:wrsim/UnitState.dart';
-import 'package:wrsim/UnitSelector.dart';
-import 'package:wrsim/utils.dart' as wr_utils;
+import 'package:wrbattlesim/DiceCard.dart';
+import 'package:wrbattlesim/UnitIdentification.dart';
+import 'package:wrbattlesim/UnitState.dart';
+import 'package:wrbattlesim/UnitSelector.dart';
+import 'package:wrbattlesim/utils.dart' as wr_utils;
 import 'package:wheel_picker/wheel_picker.dart';
 import 'package:wrdice/wrdice.dart' as wrdice;
 import 'package:wrdice/wrdice_bindings_generated.dart';
 import 'package:material_symbols_icons/material_symbols_icons.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
-import 'package:wrsim/AppState.dart';
+import 'package:wrbattlesim/AppState.dart';
 import "package:intl/intl.dart";
 import 'UnitSelectorOverlay.dart';
 
@@ -43,17 +43,20 @@ class WarRoomApp extends StatelessWidget {
       light: ThemeData.light(useMaterial3: true),
       dark: ThemeData.dark(useMaterial3: true),
       initial: AdaptiveThemeMode.dark,
-      builder: (theme, darkTheme) =>
-          MaterialApp(theme: theme, darkTheme: darkTheme, home: wrsimApp()),
+      builder: (theme, darkTheme) => MaterialApp(
+        theme: theme,
+        darkTheme: darkTheme,
+        home: wrbattlesimApp(),
+      ),
     );
   }
 }
 
-class wrsimApp extends StatefulWidget {
-  const wrsimApp({Key? key}) : super(key: key);
+class wrbattlesimApp extends StatefulWidget {
+  const wrbattlesimApp({Key? key}) : super(key: key);
 
   @override
-  State<wrsimApp> createState() => _wrsimAppState();
+  State<wrbattlesimApp> createState() => _wrbattlesimAppState();
 }
 
 const Color _colour_air = Color.fromARGB(50, 3, 167, 200);
@@ -67,7 +70,7 @@ const List<Color> unitColors = [
   Colors.red,
 ];
 
-class _wrsimAppState extends State<wrsimApp> {
+class _wrbattlesimAppState extends State<wrbattlesimApp> {
   int _selectedNavIndex = 0; // 0 = Units, 1 = Pie, 2 = Bar
   bool _isLand = true;
   bool _withBatchCap = true;

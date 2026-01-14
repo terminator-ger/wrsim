@@ -55,7 +55,7 @@ jobs:
         run: |
           mkdir -p artifacts
           cp build/app/outputs/flutter-apk/*.apk artifacts/
-          mv artifacts/app-release.apk artifacts/wrsim.apk
+          mv artifacts/app-release.apk artifacts/wrbattlesim.apk
 
       # ─────────────── ONLY ON TAGS ───────────────
       - name: Create or update Release
@@ -125,7 +125,7 @@ jobs:
           mkdir -p artifacts
           cp -r build/linux/x64/release/bundle/* artifacts/
           cd artifacts
-          tar -czf wrsim.tar.gz *
+          tar -czf wrbattlesim.tar.gz *
 
       # ─────────────── ONLY ON TAGS ───────────────
       - name: Create or update Release
