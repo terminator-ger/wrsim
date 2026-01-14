@@ -97,6 +97,8 @@ jobs:
           name:      Release ${{ github.ref_name }}
           artifacts: artifacts/*
           token:     ${{ secrets.GITHUB_TOKEN }}
+          bodyFile: "body.md"
+          allowUpdates: true
 
   build_linux:
     runs-on: ubuntu-latest
