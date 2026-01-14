@@ -1,0 +1,6 @@
+This app is a battle calculator for the board game War Room. Simulate the battle and make smarter decisions than your opponent!
+
+
+
+The round WAR ROOM® logo is a registered trademark of Nightingale Games LLC.
+All rights reserved. Used with permission.

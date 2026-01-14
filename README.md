@@ -1,7 +1,7 @@
 # WR Sim
 ![Example Combat](resources/banner.png)
 
-This app is battle calculator for the board game War Room. Simulate the outcome and make smarter decisions than your opponent!
+This app is battle calculator for the board game War Roonm. Simulate the outcome and make smarter decisions than your opponent!
 
 ## Installation
 
@@ -26,13 +26,13 @@ Q: How does hit assignment for cruisers in escort stance work?
 A: For sea units escort hits are prioritized to be taken for battleships over carriers.
 
 ## Disclaimer
-This is a fanproject for the board game WAR ROOM. It's intent is to help you develop new straegies for the game and help you in your decisions thoughout the game.
+This is a fanproject for the board game War Room. It's intent is to help you develop new straegies for the game and help you in your decisions thoughout the game.
 
 ## Trademark Notice
 
-> WAR ROOM® is a registered trademark of Nightingale Games LLC.
+> The round WAR ROOM® logo is a registered trademark of Nightingale Games LLC.
 > All rights reserved. Used with permission.
 
 ## License Exception
 > All source code in this repository is licensed under the GNU AGPL v3.0.
-> The WAR ROOM logo and related trademark assets are not licensed under the AGPL and are used with permission from Nightingale Games LLC.
+> The round WAR ROOM® logo and related trademark assets are not licensed under the AGPL and are used with permission from Nightingale Games LLC.
