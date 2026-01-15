@@ -87,6 +87,8 @@ jobs:
         run: |
           mkdir -p artifacts
           cp build\windows\x64\runner\Release\ artifacts/
+          cd artifacts
+          tar -xf wrbattlesim.zip 
 
       # ─────────────── ONLY ON TAGS ───────────────
       - name: Create or update Release
