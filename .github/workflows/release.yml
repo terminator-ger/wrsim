@@ -52,13 +52,12 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
             flutter-version: 3.24.0
-      - run: flutter upgrade
+      - run: echo $UPLOAD | base64 -di > android/app/release.jks
       - run: |
           printf "storePassword=$STORE_PASSWORD\n" > ./key.properties
           printf "keyPassword=$KEY_PASSWORD\n" >> ./key.properties
           printf "keyAlias=$KEY_ALIAS\n" >> ./key.properties
-          printf "storeFile=$STORE_FILE" >> ./key.properties
-      - run: echo $UPLOAD | base64 -di > android/app/release.jks
+          printf "storeFile=android/app/release.jks\n" >> ./key.properties
       - run: ls -la
       - run: cat ./key.properties
       - run: flutter clean
