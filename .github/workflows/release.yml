@@ -59,6 +59,7 @@ jobs:
           printf "keyAlias=$KEY_ALIAS\n" >> ./key.properties
           printf "storeFile=$STORE_FILE" >> ./key.properties
       - run: echo $UPLOAD | base64 -di > android/app/release.jks
+      - run: ls -la
       - run: flutter clean
       - run: flutter pub get
       - run: flutter build apk
