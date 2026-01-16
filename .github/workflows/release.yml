@@ -61,13 +61,12 @@ jobs:
       - run: flutter upgrade
       - run: flutter clean
       - run: flutter pub get
-      - run: flutter build apk
+      - run: flutter build apk --split-per-abi --release
       - run: flutter build appbundle
       - name: Prepare artifacts
         run: |
           mkdir -p artifacts
           cp build/app/outputs/flutter-apk/*.apk artifacts/
-          mv artifacts/app-release.apk artifacts/wrbattlesim.apk
 
       # ─────────────── ONLY ON TAGS ───────────────
       - name: Create or update Release
