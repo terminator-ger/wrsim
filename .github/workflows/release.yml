@@ -60,6 +60,7 @@ jobs:
           printf "storeFile=$STORE_FILE" >> ./key.properties
       - run: echo $UPLOAD | base64 -di > android/app/release.jks
       - run: ls -la
+      - run: cat ./key.properties
       - run: flutter clean
       - run: flutter pub get
       - run: flutter build apk
