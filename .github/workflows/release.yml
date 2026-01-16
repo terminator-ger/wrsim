@@ -96,13 +96,13 @@ jobs:
           channel: stable
       - run: flutter clean
       - run: flutter pub get
-      - run: flutter build windows
+      - run: flutter build windows --release
       - name: Prepare artifacts
         run: |
           mkdir -p artifacts
-          cp build\windows\x64\runner\Release\ artifacts/
+          cp -r build\windows\x64\runner\Release\ artifacts/
           cd artifacts
-          tar -xf wrbattlesim.zip 
+          tar -acf wrbattlesim.zip .
 
       # ─────────────── ONLY ON TAGS ───────────────
       - name: Create or update Release
