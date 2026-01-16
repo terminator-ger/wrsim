@@ -18,6 +18,11 @@ concurrency:
 env:
   CC: gcc
   CXX: g++
+  UPLOAD: ${{ secrets.UPLOAD }}
+  KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+  STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+  STORE_FILE: ${{secrets.STORE_FILE}}
+  KEY_ALIAS: ${{secrets.KEY_ALIAS}}
 
 jobs:
   build_android:
@@ -48,6 +53,13 @@ jobs:
         with:
             flutter-version: 3.24.0
       - run: flutter upgrade
+      - run: |
+          printf "storePassword=$STORE_PASSWORD" > ./android/key.properties
+          printf "keyPassword=$KEY_PASSWORD" > ./android/key.properties
+          printf "keyAlias=$KEY_ALIAS" > ./android/key.properties
+          printf "storeFile=$STORE_FILE" > ./android/key.properties
+      - run: echo $UPLOAD | base64 -di > android/app/release.jks
+      - run: flutter clean
       - run: flutter pub get
       - run: flutter build apk
       - run: flutter build appbundle
@@ -82,6 +94,8 @@ jobs:
         uses: subosito/flutter-action@v2
         with:
           channel: stable
+      - run: flutter clean
+      - run: flutter pub get
       - run: flutter build windows
       - name: Prepare artifacts
         run: |

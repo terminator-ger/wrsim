@@ -12,6 +12,7 @@
 .swiftpm/
 artifacts/*
 migrate_working_dir/
+certs/
 
 # IntelliJ related
 *.iml
