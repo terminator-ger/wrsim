@@ -54,10 +54,10 @@ jobs:
             flutter-version: 3.24.0
       - run: flutter upgrade
       - run: |
-          printf "storePassword=$STORE_PASSWORD" > ./android/key.properties
-          printf "keyPassword=$KEY_PASSWORD" > ./android/key.properties
-          printf "keyAlias=$KEY_ALIAS" > ./android/key.properties
-          printf "storeFile=$STORE_FILE" > ./android/key.properties
+          printf "storePassword=$STORE_PASSWORD" > ./key.properties
+          printf "keyPassword=$KEY_PASSWORD" > ./key.properties
+          printf "keyAlias=$KEY_ALIAS" > ./key.properties
+          printf "storeFile=$STORE_FILE" > ./key.properties
       - run: echo $UPLOAD | base64 -di > android/app/release.jks
       - run: flutter clean
       - run: flutter pub get
