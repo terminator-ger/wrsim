@@ -58,8 +58,6 @@ jobs:
           printf "keyPassword=$KEY_PASSWORD\n" >> ./key.properties
           printf "keyAlias=$KEY_ALIAS\n" >> ./key.properties
           printf "storeFile=android/app/release.jks\n" >> ./key.properties
-      - run: ls -la
-      - run: cat ./key.properties
       - run: flutter upgrade
       - run: flutter clean
       - run: flutter pub get
