@@ -66,13 +66,21 @@ flutter {
 }
 
 
-ext.abiCodes = ["x86_64": 1, "armeabi-v7a": 2, "arm64-v8a": 3]
-import com.android.build.OutputFile
-android.applicationVariants.all { variant ->
-  variant.outputs.each { output ->
-    def abiVersionCode = project.ext.abiCodes.get(output.getFilter(OutputFile.ABI))
-    if (abiVersionCode != null) {
-      output.versionCodeOverride = variant.versionCode * 100 + abiVersionCode
+dependencies {}
+
+extra["abiCodes"] = mapOf(
+    "x86_64" to 1,
+    "armeabi-v7a" to 2,
+    "arm64-v8a" to 3
+)
+
+android.applicationVariants.all {
+    outputs.all {
+        val abiCodes = project.extra["abiCodes"] as Map<String, Int>
+        val abi = getFilter(OutputFile.ABI)
+        val abiVersionCode = abiCodes[abi]
+        if (abiVersionCode != null) {
+            versionCodeOverride = versionCode * 100 + abiVersionCode
+        }
     }
-  }
 }
