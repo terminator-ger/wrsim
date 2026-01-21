@@ -70,7 +70,7 @@ flutter {
 dependencies {}
 
 
-
+/*
 val abiCodes = mapOf(
     "x86_64" to 1,
     "armeabi-v7a" to 2,
@@ -99,3 +99,5 @@ androidComponents {
     }
 }
 
+
+ */
