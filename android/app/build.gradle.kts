@@ -2,6 +2,7 @@ import java.util.Properties
 import java.io.FileInputStream
 
 import com.android.build.gradle.internal.cxx.configure.gradleLocalProperties
+import com.android.build.api.variant.FilterConfiguration
 
 plugins {
     id("com.android.application")
@@ -68,6 +69,8 @@ flutter {
 
 dependencies {}
 
+
+
 val abiCodes = mapOf(
     "x86_64" to 1,
     "armeabi-v7a" to 2,
@@ -77,16 +80,22 @@ val abiCodes = mapOf(
 androidComponents {
     onVariants { variant ->
         variant.outputs.forEach { output ->
+
             val abi = output.filters
-                .find { it.filterType == "ABI" }
+                .firstOrNull { it.filterType == FilterConfiguration.FilterType.ABI }
                 ?.identifier
 
             val abiVersionCode = abiCodes[abi]
+
             if (abiVersionCode != null) {
+                val baseVersionCode =
+                    output.versionCode.orNull ?: 1
+
                 output.versionCode.set(
-                    variant.versionCode.get() * 100 + abiVersionCode
+                    baseVersionCode * 100 + abiVersionCode
                 )
             }
         }
     }
 }
+
