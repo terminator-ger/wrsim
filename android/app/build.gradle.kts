@@ -69,35 +69,37 @@ flutter {
 
 dependencies {}
 
+/ Map for the version code that gives each ABI a value.
+val abiCodes = mapOf("armeabi-v7a" to 1, "x86" to 2, "x86_64" to 3)
 
-/*
-val abiCodes = mapOf(
-    "x86_64" to 1,
-    "armeabi-v7a" to 2,
-    "arm64-v8a" to 3
-)
+// For per-density APKs, create a similar map:
+// val densityCodes = mapOf("mdpi" to 1, "hdpi" to 2, "xhdpi" to 3)
 
+import com.android.build.api.variant.FilterConfiguration.FilterType.*
+
+// For each APK output variant, override versionCode with a combination of
+// abiCodes * 1000 + variant.versionCode. In this example, variant.versionCode
+// is equal to defaultConfig.versionCode. If you configure product flavors that
+// define their own versionCode, variant.versionCode uses that value instead.
 androidComponents {
     onVariants { variant ->
+
+        // Assigns a different version code for each output APK
+        // other than the universal APK.
         variant.outputs.forEach { output ->
+            val name = output.filters.find { it.filterType == ABI }?.identifier
 
-            val abi = output.filters
-                .firstOrNull { it.filterType == FilterConfiguration.FilterType.ABI }
-                ?.identifier
-
-            val abiVersionCode = abiCodes[abi]
-
-            if (abiVersionCode != null) {
-                val baseVersionCode =
-                    output.versionCode.orNull ?: 1
-
-                output.versionCode.set(
-                    baseVersionCode * 100 + abiVersionCode
-                )
+            // Stores the value of abiCodes that is associated with the ABI for this variant.
+            val baseAbiCode = abiCodes[name]
+            // Because abiCodes.get() returns null for ABIs that are not mapped by ext.abiCodes,
+            // the following code doesn't override the version code for universal APKs.
+            // However, because you want universal APKs to have the lowest version code,
+            // this outcome is desirable.
+            if (baseAbiCode != null) {
+                // Assigns the new version code to output.versionCode, which changes the version code
+                // for only the output APK, not for the variant itself.
+                output.versionCode.set(baseAbiCode * 1000 + (output.versionCode.get() ?: 0))
             }
         }
     }
 }
-
-
- */
