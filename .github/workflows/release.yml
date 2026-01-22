@@ -61,12 +61,24 @@ jobs:
       - run: flutter upgrade
       - run: flutter clean
       - run: flutter pub get
-      - run: flutter build apk --release
-      - run: flutter build appbundle
-      - name: Prepare artifacts
+      - run: mkdir -p artifacts
+      - name: Build APK
         run: |
-          mkdir -p artifacts
-          cp build/app/outputs/flutter-apk/*.apk artifacts/
+          flutter build apk --release
+          cp build/app/outputs/flutter-apk/app-release.apk artifacts/wrsim.apk
+      - name: Build APK arm
+        run: |
+          flutter build apk --release --split-per-abi --target-platform="android-arm" 
+          cp build/app/outputs/flutter-apk/app-armeabi-v7a-release.apk artifacts/wrsim-armeabi-v7a.apk
+      - name: Build APK arm64
+        run: |
+          flutter build apk --release --split-per-abi --target-platform="android-arm64" 
+          cp build/app/outputs/flutter-apk/app-arm64-v8a-release.apk artifacts/wrsim-arm64-v8a.apk
+      - name: Build APK armx86_64
+        run: |
+          flutter build apk --release --split-per-abi --target-platform="android-x64" 
+          cp build/app/outputs/flutter-apk/app-x86_64-release.apk artifacts/wrsim-x86_64.apk
+
 
       # ─────────────── ONLY ON TAGS ───────────────
       - name: Create or update Release
