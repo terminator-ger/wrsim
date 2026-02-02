@@ -5,7 +5,7 @@ This app is battle calculator for the board game War Roonm. Simulate the outcome
 
 ## Installation
 
-Download the latest release from [Releases](https://github.com/terminator-ger/wrbattlesim/releases)
+Download the latest release from [Releases](https://github.com/terminator-ger/wrsim/releases)
 There are currently prebuild packages for Android, Linux and soon Windows.
 
 
