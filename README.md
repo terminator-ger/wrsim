@@ -26,7 +26,7 @@ Q: How does hit assignment for cruisers in escort stance work?
 A: For sea units escort hits are prioritized to be taken for battleships over carriers.
 
 ## Disclaimer
-This is a fanproject for the board game War Room. It's intent is to help you develop new straegies for the game and help you in your decisions thoughout the game.
+This is a fan-project for the board game War Room and is not affiliated with Nightingale Games. It's intent is to help you develop new strategies for the game and help you in your decisions throughout the game.
 
 ## Trademark Notice
 
